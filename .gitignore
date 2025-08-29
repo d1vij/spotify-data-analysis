@@ -2,3 +2,5 @@
 my_spotify_data.zip
 **/data/*
 **/__pycache__/
+API_KEYS
+node_modules

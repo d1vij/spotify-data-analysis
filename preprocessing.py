@@ -80,8 +80,8 @@ FilteredSongInfoArray = list[FilteredTrackInfo]
 SongAttributes = Literal["ts","platform","ms_played","conn_country","ip_addr","master_metadata_track_name","master_metadata_album_artist_name","master_metadata_album_album_name","spotify_track_uri","episode_name","episode_show_name","spotify_episode_uri","audiobook_title","audiobook_uri","audiobook_chapter_uri","audiobook_chapter_title","reason_start","reason_end","shuffle","skipped","offline","offline_timestamp","incognito_mode"]
 
 def read_file(name:str) -> SongInfoArray:
-    with open(name, 'r') as file:
-        return json.loads(file.read())
+    with open(name, 'r', encoding='utf-8') as file:
+        return json.load(file)
 
 def extract_filtered(song_info_obj,filters:list[SongAttributes]) -> FilteredTrackInfo:
     filtered = {}
