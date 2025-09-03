@@ -8,7 +8,7 @@ class Plots:
     def plot_1(obj: pd.Series, rows, title, xlabel, ylabel):
         __obj_slice = obj.iloc[:rows]
 
-        plt.figure(figsize=(15, 0.14 * rows))
+        plt.figure(figsize=(15, 0.16 * rows))
         plt.grid(axis='y', linestyle=':')
 
         ax = sns.barplot(y=__obj_slice.index, x=__obj_slice.values, #type: ignore
@@ -24,13 +24,13 @@ class Plots:
         plt.ylabel(ylabel, rotation=0)
         plt.tight_layout()
 
-        plt.grid(axis='both', linestyle=':')
 
         for container in ax.containers:
             plt.bar_label(container) #type: ignore
 
         sns.despine(top=True, bottom=True, right=True, left=True)
 
+        plt.tight_layout()
         plt.title(title)
         plt.show()
 

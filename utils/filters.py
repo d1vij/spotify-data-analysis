@@ -7,7 +7,7 @@ class Filters:
         if(type(obj) == pd.Series):
             return obj[obj > value]
         elif(type(obj) == pd.DataFrame):
-            return obj[(obj > value).any(axis=1)]
+            return obj[(obj > value).all(axis=1)]
         else: raise TypeError("Can filter only Series or DataFrame objects")
             
     @staticmethod
@@ -15,7 +15,7 @@ class Filters:
         if(type(obj) == pd.Series):
             return obj[obj < value]
         elif(type(obj) == pd.DataFrame):
-            return obj[(obj < value).any(axis=1)]
+            return obj[(obj < value).all(axis=1)]
         else: raise TypeError("Can filter only Series or DataFrame objects")
             
     @staticmethod
@@ -23,7 +23,7 @@ class Filters:
         if(type(obj) == pd.Series):
             return obj[obj <= value]
         elif(type(obj) == pd.DataFrame):
-            return obj[(obj <= value).any(axis=1)]
+            return obj[(obj <= value).all(axis=1)]
         else: raise TypeError("Can filter only Series or DataFrame objects")
 
     @staticmethod
@@ -31,7 +31,7 @@ class Filters:
         if(type(obj) == pd.Series):
             return obj[obj >= value]
         elif(type(obj) == pd.DataFrame):
-            return obj[(obj >= value).any(axis=1)]
+            return obj[(obj >= value).all(axis=1)]
         else: raise TypeError("Can filter only Series or DataFrame objects")
     
     @staticmethod
