@@ -1,0 +1,24 @@
+$seasalt: #f8f9faff;
+$antiflash-white: #e9ecefff;
+$platinum: #dee2e6ff;
+$french-gray: #ced4daff;
+$french-gray-2: #adb5bdff;
+$slate-gray: #6c757dff;
+$outer-space: #495057ff;
+$onyx: #343a40ff;
+$eerie-black: #212529ff;
+
+$font: "Oswald";
+
+
+@mixin hover-grow(){
+    transition: scale 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    &:hover{
+        scale: 105%;
+    }
+    
+}
+@mixin box-shadow-1(){
+    // box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}

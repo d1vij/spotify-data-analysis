@@ -1,0 +1,67 @@
+@use "commons.scss" as *;
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+html, body{
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+    background-color: $french-gray;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: fit-content;
+    overflow-x: hidden;
+}
+
+#header {
+    background-color:$platinum;
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 5;
+    height: 50px;
+    font-family: $font;
+    border-radius: 20px;
+    padding: 5px;
+    padding-inline: 10px;
+    align-items: center;
+    @include box-shadow-1();
+    #icon {
+        height: 50px;
+        margin-left:10px ;
+    }
+    #application-title{
+        font-size: 32px;
+    }
+    
+    #show-upload-popup{
+        font-family: $font;
+        margin-right: 10px;
+        height: 40px;
+        width: 50px;
+        font-size: 1em;
+        cursor: pointer;
+        @include hover-grow();
+        background-color: $french-gray;
+        border-radius: 15px;
+    }
+    
+}
+
+#main-content {
+    height: 10000px;
+    width: calc(100% - 20px);
+    background-color: $platinum;
+    border-radius: 25px;
+    margin-inline: 10px;
+    margin-bottom: 25px;
+    @include box-shadow-1();
+}

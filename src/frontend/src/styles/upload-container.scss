@@ -1,0 +1,133 @@
+@use "commons.scss" as *;
+
+
+#upload-window {
+    z-index: 5;
+    position: fixed;
+    // top: 50px;
+    height: 100%;
+    width: 100%;
+    scroll-behavior: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    top: 0;
+    left: 0;
+    background-color: rgba($color: $onyx, $alpha: 0.25);
+    backdrop-filter: blur(3px);
+}
+.no-scroll {
+    overflow: hidden;
+}
+
+#container {
+    height: 500px;
+    width: 700px;
+    display: flex;
+    background-color: $slate-gray;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Oswald";
+
+    border-radius: 50px;
+    border-style: dotted;
+    border-width: 3px;
+    border-color: $onyx;
+    @include box-shadow-1();
+}
+
+#upload-info-title {
+    font-size: 32px;
+    text-align: center;
+    
+    margin-top: 20px;
+    margin-bottom: 100px;
+    
+    #highlighted{
+        color: #FAD691;
+        font-weight: 500;
+    }
+}
+
+#upload-form {
+    display: flex;   
+    flex-direction: column;
+    width: calc(100% - 200px);
+
+    align-items: center;
+    
+    label[for="zf-input"] {
+        background-color: $french-gray;
+        cursor: pointer;
+        width: 150px;
+        height: 50px;
+        font-family: "Oswald";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        
+        @include hover-grow();
+
+        
+        #zf-input {
+            display: none;
+        }
+    }
+}
+#filename-preview {
+    min-height: 2em;
+    max-width: 50ch;
+    margin-bottom: 1em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+    -webkit-line-clamp: 3; //i mean filename shouldt be larger than 150ch
+    overflow: hidden;
+}
+
+#submit, #cancel {
+    cursor: pointer;
+    width: 150px;
+    height: 50px;
+    border-radius: 25px;
+    @include hover-grow();
+    background-color: $french-gray;
+    font-family: "Oswald";
+    font-size: 1em;
+}
+#popup {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 15;
+    display: flex;
+    background-color: rgba($color: $eerie-black, $alpha: 0.5);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    @include box-shadow-1();
+}
+
+
+#spinner {
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: $antiflash-white;
+    padding: 15px;
+    border-radius: 25px;
+    font-family: "Oswald";
+    #text {
+        font-size: 2em;
+    }
+}
+
+.hidden{
+    visibility: hidden;
+    display: none !important;
+}
