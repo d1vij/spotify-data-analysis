@@ -5,4 +5,6 @@ const router = express.Router();
 
 // POST @/upload;
 router.post("/", processUploadedZip);
+
+/**Mount path @/upload */
 export const UploadRouter = router;

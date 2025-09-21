@@ -39,7 +39,7 @@ body {
         margin-left:10px ;
     }
     #application-title{
-        font-size: 32px;
+        font-size: 38px;
     }
     
     #show-upload-popup{
@@ -57,11 +57,41 @@ body {
 }
 
 #main-content {
-    height: 10000px;
+    min-height: 635px;
+    // height: 10000px;
     width: calc(100% - 20px);
     background-color: $platinum;
     border-radius: 25px;
     margin-inline: 10px;
     margin-bottom: 25px;
     @include box-shadow-1();
+}
+
+#waiting-for-analysis-popup,#no-zip-uploaded-popup{
+    height: 600px;
+    width: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#no-zip-uploaded-popup{
+    #info-text {
+        font-family: $font;
+        font-size: 2em;
+    }
+    #arrow {
+        position: absolute;
+        height: 500px;
+        top: -40px;
+        left: calc(100vw / 2 + 250px);
+    }
+}
+#waiting-for-analysis-popup {
+    font-family: $font;
+    display: flex;
+    font-size: 32px;
+    #loader{
+        margin-inline-start: 1ch;
+    }
 }

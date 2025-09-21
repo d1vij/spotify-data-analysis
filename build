@@ -4,15 +4,6 @@ rm -rf "dist"
 tsc || { echo "> Typescript compilation failed"; exit 1; }
 echo "> Typescript compilation done"
 
-rsync -av "./src/backend/" "./dist/backend/" \
-    --exclude="**/*.ts" \
-    --exclude="**/__pycache__/" \
-    --exclude="**/.venv/" \
-    || { echo "> Copying python files failed"; exit 1; }
-
-echo "> Python src copied"
-source ./scripts/setup-pie-env
-
 echo "> Building frontend"
 cd src/frontend
 npm run build || { echo "> Frontend build failed"; exit 1; }

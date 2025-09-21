@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Upload</title>
   <script type="module" src="src/scripts/script.ts"></script>
   <link rel="stylesheet" href="src/styles/style.scss">
@@ -47,8 +47,21 @@
 
 
 
-  <main id="main-content"></main>
+  <div id="no-zip-uploaded-popup">
+    <p id="info-text">{So empty... go upload a zip file}</p>
+    <img src="assets/red-arrow.webp" alt="" draggable="false" id="arrow">
+  </div>
+  <div id="waiting-for-analysis-popup" class="hidden">
+    <p id="wfap-text">Generating analysis</p>
+    <p id="loader">⠋</p>
+  </div>
+  
+  <main id="main-content">
 
+
+    
+    
+  </main>
 
 
   <div id="popup" class="hidden">
@@ -66,7 +79,7 @@
         <img src="https://cultofthepartyparrot.com/parrots/wave8parrot.gif" draggable="false" alt="">
         <img src="https://cultofthepartyparrot.com/parrots/wave9parrot.gif" draggable="false" alt="">
       </div>
-      <div id="footer">(you will be redirected automatically)</div>
+      <!-- <div id="footer">(you will be redirected automatically)</div> -->
     </div>
   </div>
 </body>

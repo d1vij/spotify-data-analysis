@@ -137,8 +137,7 @@ def process(filepath: str):
     songs = [song for file in files for song in read_file(file)]
     filtered = [extract_filtered(song, filters) for song in songs]
     tracks = pd.DataFrame(filtered)
-    # tracks["ts"] = pd.to_datetime(tracks['ts']) 
-    tracks.to_json(out_json_path)
+    tracks.to_json(out_json_path, date_format='iso')
 
     print(tracks.head())
     # cleanup

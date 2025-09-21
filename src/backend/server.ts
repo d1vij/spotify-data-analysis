@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import chalk from "chalk";
 import { fileURLToPath } from "url";
+import cookies from "cookie-parser";
 
 // dotenv setup
 import dotenv from "dotenv";
@@ -14,6 +15,7 @@ pythonPath.set(process.env.PYTHON_PATH)
 
 // ROUTERS
 import {UploadRouter} from "./components/upload/router.js";
+import { AnalysisRouter } from "./components/analysis/router.js";
 
 import { logger } from "./logger.js";
 
@@ -41,7 +43,10 @@ export const upload = createUploadMiddleware(dataFolder);
 // express
 const app = express();
 app.use(logger);
-app.use(express.json());
+app.use(cookies("add something secure here"));
+app.use(express.urlencoded({limit: '500mb'}));
+app.use(express.json({limit: '500mb'}));
+
 
 // Static folder hookups
 app.use("/",express.static(frontendFolder));
@@ -52,6 +57,7 @@ app.get("/", (_, response) => {
 
 // Router mounting
 app.use("/upload", UploadRouter);
+app.use("/analysis", AnalysisRouter);
 
 
 
