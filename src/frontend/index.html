@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Upload</title>
+  <script type="module" src="src/scripts/script.ts"></script>
+  <link rel="stylesheet" href="src/styles/style.scss">
+  <link rel="stylesheet" href="src/styles/upload-container.scss">
+
+  <!-- "Oswald" font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+  <!-- REMOVE ME -->
+  <!-- <style>* {outline: solid 1px #f00 !important;}</style> -->
+  
+  
+</head>
+
+<body>
+  <div id="header">
+    <img src="https://cultofthepartyparrot.com/parrots/hd/parrot.gif" id="icon" alt="" draggable="false">
+    <span id="application-title">Spotify Data Analysis</span>
+    <button id="show-upload-popup">Upload</button>
+  </div>
+
+  <div id="upload-window" class="hidden">
+    <div id="container">
+      <p id="upload-info-title">Upload the zip file containing your data <br>(It would probably be named <span
+          id="highlighted">my_spotify_data.zip</span>)</p>
+      <form action="" method="post" id="upload-form">
+        <p id="filename-preview">(no file selected)</p>
+        <label for="zf-input">
+          Select File
+          <input type="file" name="zipfile" id="zf-input" accept="application/zip" required>
+        </label>
+        <div id="control-buttons">
+          <button type="button" id="cancel">Cancel</button>
+          <button type="submit" id="submit">Upload</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+
+
+  <div id="no-zip-uploaded-popup">
+    <p id="info-text">{So empty... go upload a zip file}</p>
+    <img src="assets/red-arrow.webp" alt="" draggable="false" id="arrow">
+  </div>
+  <div id="waiting-for-analysis-popup" class="hidden">
+    <p id="wfap-text">Generating analysis</p>
+    <p id="loader">⠋</p>
+  </div>
+  
+  <main id="main-content">
+
+
+    
+    
+  </main>
+
+
+  <div id="popup" class="hidden">
+    <div id="spinner">
+      <div id="text">Uploading and Processing your file...</div>
+      <div id="parrots">
+        <!-- NOTE: This might go out of sync based on how fast it is loaded by the browser -->
+        <img src="https://cultofthepartyparrot.com/parrots/wave1parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave2parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave3parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave4parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave5parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave6parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave7parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave8parrot.gif" draggable="false" alt="">
+        <img src="https://cultofthepartyparrot.com/parrots/wave9parrot.gif" draggable="false" alt="">
+      </div>
+      <!-- <div id="footer">(you will be redirected automatically)</div> -->
+    </div>
+  </div>
+</body>
+
+</html>
