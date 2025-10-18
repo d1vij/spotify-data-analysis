@@ -1,12 +1,9 @@
 import re
 from typing import Literal
-
-
 timestamp_regex= r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$"
 pattern = re.compile(timestamp_regex)
 
 # 2020-11-27T07:19:29Z
-
 def extract_from_timestamp(what:Literal["year", "month", "day", "date", "hour", "minute", "seconds", "time-24"], timestamp: str):
     m = re.match(pattern, timestamp)
     if(m is None):

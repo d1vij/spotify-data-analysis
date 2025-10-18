@@ -11,3 +11,4 @@ def smoothen(ser: pd.Series, amount: int):
     x_points = np.linspace(ser.index.min(), ser.index.max(), amount, endpoint=True)
     y_points = spline(x_points)
     return pd.Series(y_points, index=x_points)
+

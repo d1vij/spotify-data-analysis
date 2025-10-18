@@ -2,7 +2,6 @@
 from rapidfuzz import fuzz
 import pandas as pd
 
-
 def search_artists(
     name: str,
     _in: pd.DataFrame | pd.Series | list[str],
@@ -11,11 +10,11 @@ def search_artists(
     artist_colname="master_metadata_album_artist_name",
 ):
 
-    if type(_in) == pd.DataFrame:
+    if type(_in) is pd.DataFrame:
         artists = _in[artist_colname].values
-    elif type(_in) == pd.Series:
+    elif type(_in) is pd.Series:
         artists = _in.values
-    elif type(_in) == list[str]:
+    elif type(_in) is list[str]:
         artists = _in
     else:
         raise (TypeError(f"Type of {type(_in)} not allowed"))
