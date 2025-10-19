@@ -4,3 +4,4 @@ my_spotify_data.zip
 **/__pycache__/
 API_KEYS
 node_modules
+**/.ruff_cache/

@@ -1,29 +1,29 @@
 # https://github.com/d1vij/spotify-data-analysis/tree/ffc4be093155d40d2be87b00373c749324317c68
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
-import seaborn as sns
-import numpy as np
+
+
 from datetime import datetime
 from typing import cast
 
-from .filters import *
-from .smoothen import *
+import pandas as pd
+import numpy as np
 
-
-from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+import seaborn as sns
 import squarify
 
+from .filters import Filters
+from .smoothen import smoothen
 from .series_textwrap import index_wrap
 from .series_textellipses import index_ellipses
+
 
 class Plots:
     """All methods return a figure object"""
 
     @staticmethod
     def plot_squarify(ser: pd.Series, title, ax=None):
-
-        if(ax is None):
+        if ax is None:
             fig, ax = plt.subplots(figsize=(10, 10))
 
         squarify.plot(
@@ -31,7 +31,7 @@ class Plots:
             label=ser.index,
             alpha=0.8,
             color=sns.color_palette("coolwarm_r", len(ser)),
-            ax=ax
+            ax=ax,
         )
 
         sns.despine(top=True, bottom=True, right=True, left=True, ax=ax)
@@ -41,20 +41,18 @@ class Plots:
 
         ax.set_title(title, fontsize=23)
 
-        if(ax is None):
+        if ax is None:
             plt.show()
 
     @staticmethod
     def simple_barplot(y: pd.Series, title: str, xlabel, ylabel, ax=None):
-
-        if(ax is None):
+        if ax is None:
             fig, ax = plt.subplots(figsize=(7, 5))
             sns.barplot(x=y.index, y=y.values, palette="pastel", hue=y.index)  # type: ignore
 
         sns.barplot(x=y.index, y=y.values, palette="pastel", hue=y.index, ax=ax)  # type: ignore
         for container in ax.containers:
             ax.bar_label(container)  # type: ignore
-
 
         ax.set_title(title)
         ax.set_xlabel(xlabel)
@@ -63,7 +61,7 @@ class Plots:
         ax.grid(linestyle=":", axis="y")
 
         sns.despine(top=True, right=True)
-        if(ax is None):
+        if ax is None:
             plt.show()
 
     @staticmethod
@@ -90,9 +88,8 @@ class Plots:
         __x = pd.to_datetime(datewise_track_count_ser.index)
         __y = datewise_track_count_ser.values
 
-
-        if(_ax is None):
-            fig, ax = plt.subplots(figsize=(10,4))
+        if _ax is None:
+            fig, ax = plt.subplots(figsize=(10, 4))
         else:
             ax = _ax
 
@@ -103,7 +100,7 @@ class Plots:
             ax=ax,
             palette="coolwarm",
             marker="o",
-            size=60
+            size=60,
         )
         date_ticks = pd.date_range(
             start=min_date, end=max_date, periods=7, inclusive="both"
@@ -116,12 +113,11 @@ class Plots:
         sns.despine()
         ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), frameon=True)
 
-        if(fig is not None):
+        if fig is not None:
             fig.tight_layout()
 
-        if(_ax is None):
+        if _ax is None:
             plt.show()
-
 
     @staticmethod
     def track_playtime_kde_dist(df: pd.DataFrame, _ax: list[Axes] | None = None):
@@ -140,12 +136,12 @@ class Plots:
         # Filtering rows whose playtime is under 10 minute
         track_playtime_ser = cast(pd.Series, Filters.rows_lteq(10, track_playtime_ser))
 
-        if(_ax is None):
+        if _ax is None:
             fig, ax = plt.subplots(2, 1, figsize=(10, 7))
         else:
             ax = _ax
 
-        #TODO: Find some alternative for this
+        # TODO: Find some alternative for this
         ax = cast(list[Axes], ax)
 
         # Plotting the KDE distribution of track playtimes
@@ -195,12 +191,11 @@ class Plots:
 
         sns.despine()
 
-        if(fig is not None):
+        if fig is not None:
             fig.tight_layout()
 
-        if(_ax is None):
+        if _ax is None:
             plt.show()
-
 
     @staticmethod
     def daily_listening_activity(df: pd.DataFrame, _ax=None):
@@ -208,8 +203,8 @@ class Plots:
 
         hour_df = df.copy()
         hour_df["hour"] = hour_df[
-        "ts"
-    ].dt.hour  # much simpler than filtering using date.strftime,
+            "ts"
+        ].dt.hour  # much simpler than filtering using date.strftime,
         # since values in df.ts are already datetime objects
 
         # Total minutes played in a particular hour
@@ -235,8 +230,7 @@ class Plots:
         daytime_names = ["Late Nights", "Mornings", "Afternoons", "Evenings", "Nights"]
         daytime_colors = ["#2c3e50", "#f1c40f", "#3498db", "#e67e22", "#8e44ad"]
 
-
-        if(_ax is None):
+        if _ax is None:
             fig, ax = plt.subplots(figsize=(10, 4))
         else:
             ax = _ax
@@ -272,16 +266,27 @@ class Plots:
         ax.set_ylim(0, None)
         sns.despine()
 
-        if(_ax is None):
+        if _ax is None:
             plt.show()
 
     @staticmethod
     def double_lineplot(
-        x1, y1, label_1, color_1, x2, y2, label_2, color_2, *, x_ticks, x_tick_label, _ax
+        x1,
+        y1,
+        label_1,
+        color_1,
+        x2,
+        y2,
+        label_2,
+        color_2,
+        *,
+        x_ticks,
+        x_tick_label,
+        _ax,
     ):
         fig = None
 
-        if(_ax is None):
+        if _ax is None:
             fig, ax = plt.subplots(1, 1, figsize=(10, 4))
         else:
             ax = _ax
@@ -306,23 +311,22 @@ class Plots:
         plt.ylabel("")
         plt.title("Variablilty in artists and tracks")
 
-        if(fig is not None):
+        if fig is not None:
             fig.tight_layout()
 
-        if(_ax is None):
+        if _ax is None:
             plt.show()
 
     @staticmethod
-    def variability_in_artists_and_tracks(df: pd.DataFrame, _ax = None):
+    def variability_in_artists_and_tracks(df: pd.DataFrame, _ax=None):
         fig = None
-
 
         # Number of Unique artists vs Unique tracks listend each month
         # Plots monthly data for each month from first listened track to latest track
 
         copy = df[
-        ["ts", "master_metadata_album_artist_name", "master_metadata_track_name"]
-    ].copy(True)
+            ["ts", "master_metadata_album_artist_name", "master_metadata_track_name"]
+        ].copy(True)
 
         # Converts the timestamp into monthly periods
         # For example, "2021-08-11 09:22:28+00:00" would get converted into "2021-08"
@@ -332,17 +336,17 @@ class Plots:
 
         # df.nunique() gives the count of unique values
         monthwise_unique_artists_count = copy.groupby("month")[
-        "master_metadata_album_artist_name"
-    ].nunique() 
+            "master_metadata_album_artist_name"
+        ].nunique()
 
         monthwise_unique_track_count = copy.groupby("month")[
-        "master_metadata_track_name"
-    ].nunique()
+            "master_metadata_track_name"
+        ].nunique()
 
         # Concatenating the two series into one dataframe
         aggr = pd.concat(
             [monthwise_unique_artists_count, monthwise_unique_track_count],
-            axis=1 # 1, so as to join row wise
+            axis=1,  # 1, so as to join row wise
         )
         aggr["month-year"] = aggr.index.strftime("%b %Y")  # type:ignore
         aggr.rename(
@@ -357,7 +361,7 @@ class Plots:
         y1 = aggr["Artist Count"]
         y2 = aggr["Track Count"]
 
-        if(_ax is None):
+        if _ax is None:
             fig, ax = plt.subplots(1, 1, figsize=(10, 4))
         else:
             ax = _ax
@@ -389,11 +393,11 @@ class Plots:
         max_date = dates.max()
 
         date_ticks = pd.date_range(
-            start=min_date, 
-            end=max_date, 
+            start=min_date,
+            end=max_date,
             freq="6ME",
-            # periods=7, 
-            inclusive="left"
+            # periods=7,
+            inclusive="left",
         )
 
         print(date_ticks)
@@ -411,27 +415,29 @@ class Plots:
         plt.title("Variability in artists and tracks")
         plt.tight_layout()
 
-        if(_ax is None):
+        if _ax is None:
             plt.show()
 
-
     @staticmethod
-    def analysis_per_artist(frame: pd.DataFrame, artist:str):
-        if(artist not in frame["master_metadata_album_artist_name"].values):
+    def analysis_per_artist(frame: pd.DataFrame, artist: str):
+        if artist not in frame["master_metadata_album_artist_name"].values:
             raise ValueError(f"Artist {artist} is not in data")
 
-        artist_frame = frame[frame["master_metadata_album_artist_name"] == artist].copy(True)
+        artist_frame = frame[frame["master_metadata_album_artist_name"] == artist].copy(
+            True
+        )
         # grouped = artist_frame.groupby("master_metadata_album_artist_name")
         # changing ts to year
-        artist_frame["year"] = artist_frame["ts"].apply(lambda ts: datetime.strftime(ts, "%Y"))
-
-
-
+        artist_frame["year"] = artist_frame["ts"].apply(
+            lambda ts: datetime.strftime(ts, "%Y")
+        )
 
         # Setting up plot grid
         fig = plt.figure(figsize=(18, 20), constrained_layout=True)
-        
-        grid = fig.add_gridspec(4, 2, height_ratios=[2.5, 1, 1, 1.5], hspace=0.4, wspace=0.3)
+
+        grid = fig.add_gridspec(
+            4, 2, height_ratios=[2.5, 1, 1, 1.5], hspace=0.4, wspace=0.3
+        )
 
         # 1x2
         ax1 = fig.add_subplot(grid[0, :])
@@ -450,35 +456,42 @@ class Plots:
         ax6 = fig.add_subplot(grid[3, :])
 
         # Top 50 played tracks
-        played_track_count = (artist_frame
-                              .groupby("master_metadata_track_name")
-                              .size()
-                              .sort_values(ascending=False))
+        played_track_count = (
+            artist_frame.groupby("master_metadata_track_name")
+            .size()
+            .sort_values(ascending=False)
+        )
 
         index_wrap(played_track_count, 12)
         index_ellipses(played_track_count, 22)
 
-        Plots.plot_squarify(played_track_count[:50],f"Fifty most played tracks by {artist}", ax1)
+        Plots.plot_squarify(
+            played_track_count[:50], f"Fifty most played tracks by {artist}", ax1
+        )
 
         # Year wise play time
-        yearwise_playtime = (artist_frame
-                             .groupby("year")
-                             .size())
-        Plots.simple_barplot(yearwise_playtime, f"Tracks played in a particular year by {artist}", "Year", "Play count", ax2)
+        yearwise_playtime = artist_frame.groupby("year").size()
+        Plots.simple_barplot(
+            yearwise_playtime,
+            f"Tracks played in a particular year by {artist}",
+            "Year",
+            "Play count",
+            ax2,
+        )
 
         # fig, ax = plt.subplots(2, 2, figsize=(15,7.5))
 
         fig.suptitle("Track analysis for " + artist, fontsize=23)
 
         Plots.daily_tracks_graph(artist_frame, ax4)
-        Plots.track_playtime_kde_dist(artist_frame, [ax5, ax3]) #type: ignore
+        Plots.track_playtime_kde_dist(artist_frame, [ax5, ax3])  # type: ignore
         Plots.daily_listening_activity(artist_frame, ax6)
-        
+
         plt.tight_layout()
         plt.show()
-    
+
     @staticmethod
-    def top_n_artists_by_playtime(df:pd.DataFrame, n:int):
+    def top_n_artists_by_playtime(df: pd.DataFrame, n: int):
         # Top artists by playtime
         copy = df.copy(True)
         grouped_by_artist_name = copy.groupby(copy["master_metadata_album_artist_name"])
@@ -488,19 +501,24 @@ class Plots:
         time_listend_mins = time_listend.div(6e4)
         time_listend_mins = cast(pd.Series, Filters.rows_gt(1, time_listend_mins))
         index_wrap(time_listend_mins, 10)
-        Plots.plot_squarify(time_listend_mins[:n], f"Top {n} played artists by listening minutes")
-    
+        Plots.plot_squarify(
+            time_listend_mins[:n], f"Top {n} played artists by listening minutes"
+        )
 
     @staticmethod
-    def top_n_tracks_by_playcount(df:pd.DataFrame, n:int):
-        most_played_tracks = df.groupby(df["master_metadata_track_name"])["master_metadata_track_name"].count()
+    def top_n_tracks_by_playcount(df: pd.DataFrame, n: int):
+        most_played_tracks = df.groupby(df["master_metadata_track_name"])[
+            "master_metadata_track_name"
+        ].count()
         most_played_tracks.sort_values(ascending=False, inplace=True)
         index_wrap(most_played_tracks, 10)
         Plots.plot_squarify(most_played_tracks[:n], f"{n} Most played tracks")
 
     @staticmethod
-    def yearwise_listening_minutes(df:pd.DataFrame):
+    def yearwise_listening_minutes(df: pd.DataFrame):
         copy = df.copy(True)
         copy["ts"] = copy["ts"].dt.year
         yearwise_playtime = copy.groupby("ts")["ms_played"].sum() / 60000
-        Plots.simple_barplot(yearwise_playtime, "Yearwise playtime in minutes", "Year", "Minutes Played")
+        Plots.simple_barplot(
+            yearwise_playtime, "Yearwise playtime in minutes", "Year", "Minutes Played"
+        )

@@ -1,79 +1,66 @@
 # Fuzzy searching artists / track name
 from rapidfuzz import fuzz
 import pandas as pd
+from typing import Literal
 
-def search_artists(
-    name: str,
-    _in: pd.DataFrame | pd.Series | list[str],
-    confidence: int,
+
+# Fuzzy searcher searches for given word in a series, dataframe, or list of strings
+# and return the closest matches sorted in descending order of confidence
+# For searching within single worded sequences prefer partial ratio (example for artist names)
+# and for multi word sequences prefer token set ratio (example Track names)
+def fuzzy_search(
+    phrase: str,
+    sequence: pd.DataFrame | pd.Series | list[str],
+    _search_type: Literal["partial ratio", "token set ratio"],
+    *,
+    confidence: int = 80,
+    col_name: str | None = None,
     top_n=5,
-    artist_colname="master_metadata_album_artist_name",
 ):
+    search_type = 0 if (_search_type == "partial ratio") else 1
 
-    if type(_in) is pd.DataFrame:
-        artists = _in[artist_colname].values
-    elif type(_in) is pd.Series:
-        artists = _in.values
-    elif type(_in) is list[str]:
-        artists = _in
+    if type(sequence) is pd.DataFrame:
+        if col_name is None:
+            raise ValueError(
+                "Must provide a columnn name to fuzzy search when sequence is a DataFrame"
+            )
+        data = sequence[col_name].values
+
+    elif type(sequence) is pd.Series:
+        if col_name is not None:
+            raise ValueError("Cannot provide a col_name if sequence is of type Series")
+        data = sequence.values
+
+    elif isinstance(sequence, list):
+        data = sequence
+
     else:
-        raise (TypeError(f"Type of {type(_in)} not allowed"))
+        raise (
+            TypeError(
+                f"Type of sequence must be pd.Series, pd.Dataframe or list[str] and not {type(sequence)}"
+            )
+        )
 
-    if confidence <= 0 or confidence > 100:
-        raise ValueError("Confidence must be within 1 to 100")
+    if not isinstance(sequence[0], str):
+        raise (TypeError("Values of sequence can only be of type string"))
 
     matched = []
     ratios = []
-    for artist in artists:
-        if artist is not None:
-            ratio = fuzz.partial_ratio(name.lower(), artist.lower())
-            if (ratio >= confidence) and (artist not in matched):
-                matched.append(artist)
+    for value in data:
+        if value is not None:
+            if search_type == 0:
+                ratio = fuzz.partial_ratio(phrase.lower(), value.lower())
+            else:
+                ratio = fuzz.token_set_ratio(phrase.lower(), value.lower())
+
+            if (ratio >= confidence) and (value not in matched):
+                matched.append(value)
                 ratios.append(ratio)
 
     return [
-        artist
-        for artist, _ in sorted(
-            [(artist, ratio) for artist, ratio in zip(matched, ratios)],
-            key=lambda p: p[1],
-            reverse=True,
-        )[:top_n]
-    ]
-
-
-def search_tracks(
-    name: str,
-    _in: pd.DataFrame | pd.Series | list[str],
-    confidence: int,
-    top_n: int = 5,
-    artist_colname="master_metadata_track_name",
-):
-
-    if type(_in) == pd.DataFrame:
-        tracks = _in[artist_colname].values
-    elif type(_in) == pd.Series:
-        tracks = _in.values
-    elif type(_in) == list[str]:
-        tracks = _in
-    else:
-        raise (TypeError(f"Type of {type(_in)} not allowed"))
-
-    if confidence <= 0 or confidence > 100:
-        raise ValueError("Confidence must be within 1 to 100")
-
-    matched = []
-    ratios = []
-    for track in tracks:
-        if track is not None:
-            ratio = fuzz.token_set_ratio(name.lower(), track.lower())
-            if (ratio >= confidence) and (track not in matched):
-                matched.append(track)
-                ratios.append(ratio)
-
-    return [
-        track
-        for track, _ in sorted(
-            [(track, ratio) for track, ratio in zip(matched, ratios)],
+        value
+        for value, _ in sorted(
+            [(value, ratio) for value, ratio in zip(matched, ratios)],
             key=lambda p: p[1],
             reverse=True,
         )[:top_n]

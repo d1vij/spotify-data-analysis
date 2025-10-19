@@ -1,0 +1,5 @@
+* already have spotify track ids for each track
+* song genre can be obtained from last.fm API
+* but last.fm API requires MBID (musicbrainz id)
+    ^ this can be searched using track name and artist name too, but it might not be accurate
+* so find a way to map spotify track ids with musicbrainz id
