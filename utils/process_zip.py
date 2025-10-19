@@ -1,5 +1,6 @@
 import os
 from os import path
+import shutil
 import zipfile
 
 from typing import TypedDict, Literal, Optional, cast
@@ -195,6 +196,5 @@ def process_zip(filepath: str, filters: list[SongAttributes]):
 
     # cleanup
     # os.remove(filepath)
-    # os.remove(extract_path)
-
+    shutil.rmtree(zip_extract_path)
     return out_json_path
