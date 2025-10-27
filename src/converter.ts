@@ -1,5 +1,7 @@
 import {readFile, writeFile} from "fs/promises";
 
+const bakedPiePath = "baked_pie.py"
+
 async function main(){
     const filepath = process.argv[2];
     if(filepath === undefined){
@@ -10,6 +12,9 @@ async function main(){
     const bodyColor = process.argv[3];
     const mainColor = process.argv[4];
     const cellColor = process.argv[5];
+    const compiledPie = process.argv[6];
+
+    if(compiledPie === undefined) throw new Error("Compiled python file path undefined");
 
     if(bodyColor === undefined || mainColor === undefined || cellColor == undefined){
         throw new Error("Not all colors passed, pass color hexes as <bodycolor> <main color> <cell color>")
@@ -149,6 +154,7 @@ function sanitizeHTML(__string: string): string {
  * Takes in JSON Object of the ipynb file and returns output html string
  * */
 export function convertToHtml(json:{"cells": IPyCell[]}, colors: OutputHtmlColors): string {
+    const bakedPieContent = readFile(bakedPiePath, {encoding:"utf-8"});
     const parsedCells: Cell[] = [];
 
     const builtHtmlArray = [`
@@ -159,7 +165,7 @@ export function convertToHtml(json:{"cells": IPyCell[]}, colors: OutputHtmlColor
             --cell-background-color: ${colors["cell-background-color"]};
         }
     </style>
-`];
+`, ];
 
     if(json["cells"] === undefined) throw new Error("No cells found (Cells in ipynb file undefined)");
     if(!(json["cells"].length > 0)) throw new Error("No cells found");
@@ -200,6 +206,7 @@ export function convertToHtml(json:{"cells": IPyCell[]}, colors: OutputHtmlColor
         }
     } 
 
+    builtHtmlArray.push(`<div class="cell"><pre class="language-python"><code class="language-python">${bakedPieContent}</code></pre></div>`)
     return builtHtmlArray.join(EMPTY);
 }
 

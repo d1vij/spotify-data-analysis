@@ -7,8 +7,10 @@ if [[ ! -d ".venv" ]]; then
     exit 1
 fi
 
-echo "Executing project.ipynb notebook"
-.venv/bin/python -m jupyter execute project.ipynb
+.venv/bin/python3 -m jupyter execute project.ipynb
+
+echo "Baking pie"
+.venv/bin/python3 bake.py
 
 echo "Converting jupyternotebook to html"
 /usr/bin/env node converter.js project.ipynb "#fff" "#fff" "#fff"

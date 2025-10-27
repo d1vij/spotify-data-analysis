@@ -1,3 +1,314 @@
+# utils/smoothen.py
+from scipy.interpolate import make_interp_spline
+import pandas as pd
+import numpy as np
+
+
+def smoothen(ser: pd.Series, amount: int):
+    # Smoothen a to-be-plotted series with indexes as x values and values as y values
+
+    if amount > 1e5:
+        raise RuntimeError("Reconsider the amount since it might cause large runtimes")
+    spline = make_interp_spline(ser.index, ser.values)
+    x_points = np.linspace(ser.index.min(), ser.index.max(), amount, endpoint=True)
+    y_points = spline(x_points)
+    return pd.Series(y_points, index=x_points)
+
+# utils/process_zip.py
+import os
+from os import path
+import shutil
+import zipfile
+
+from typing import TypedDict, Literal, Optional, cast
+import json
+import pandas as pd
+
+from pathlib import Path
+
+
+class TrackInfo(TypedDict, total=True):
+    ts: str
+    platform: str
+    ms_played: int
+    conn_country: str
+    ip_addr: str
+    master_metadata_track_name: str
+    master_metadata_album_artist_name: str
+    master_metadata_album_album_name: str
+    spotify_track_uri: str
+    episode_name: Optional[str]
+    episode_show_name: Optional[str]
+    spotify_episode_uri: Optional[str]
+    audiobook_title: Optional[str]
+    audiobook_uri: Optional[str]
+    audiobook_chapter_uri: Optional[str]
+    audiobook_chapter_title: Optional[str]
+    reason_start: Optional[
+        Literal[
+            "playbtn",
+            "fwdbtn",
+            "backbtn",
+            "trackdone",
+            "clickrow",
+            "appload",
+            "remote",
+            "trackerror",
+            "unknown",
+        ]
+    ]
+    reason_end: Optional[
+        Literal[
+            "fwdbtn",
+            "backbtn",
+            "logout",
+            "endplay",
+            "trackdone",
+            "unknown",
+            "remote",
+            "unexpected-exit-while-paused",
+            "unexpected-exit",
+            "trackerror",
+        ]
+    ]
+    shuffle: bool
+    skipped: bool
+    offline: bool
+    offline_timestamp: int
+    incognito_mode: bool
+
+
+class FilteredTrackInfo(TypedDict):
+    ts: Optional[str]
+    platform: Optional[str]
+    ms_played: Optional[int]
+    conn_country: Optional[str]
+    ip_addr: Optional[str]
+    master_metadata_track_name: Optional[str]
+    master_metadata_album_artist_name: Optional[str]
+    master_metadata_album_album_name: Optional[str]
+    spotify_track_uri: Optional[str]
+    episode_name: Optional[str]
+    episode_show_name: Optional[str]
+    spotify_episode_uri: Optional[str]
+    audiobook_title: Optional[str]
+    audiobook_uri: Optional[str]
+    audiobook_chapter_uri: Optional[str]
+    audiobook_chapter_title: Optional[str]
+    reason_start: Optional[
+        Literal[
+            "playbtn",
+            "fwdbtn",
+            "backbtn",
+            "trackdone",
+            "clickrow",
+            "appload",
+            "remote",
+            "trackerror",
+            "unknown",
+        ]
+    ]
+    reason_end: Optional[
+        Literal[
+            "fwdbtn",
+            "backbtn",
+            "logout",
+            "endplay",
+            "trackdone",
+            "unknown",
+            "remote",
+            "unexpected-exit-while-paused",
+            "unexpected-exit",
+            "trackerror",
+        ]
+    ]
+    shuffle: Optional[bool]
+    skipped: Optional[bool]
+    offline: Optional[bool]
+    offline_timestamp: Optional[int]
+    incognito_mode: Optional[bool]
+
+
+SongInfoArray = list[TrackInfo]
+FilteredSongInfoArray = list[FilteredTrackInfo]
+SongAttributes = Literal[
+    "ts",
+    "platform",
+    "ms_played",
+    "conn_country",
+    "ip_addr",
+    "master_metadata_track_name",
+    "master_metadata_album_artist_name",
+    "master_metadata_album_album_name",
+    "spotify_track_uri",
+    "episode_name",
+    "episode_show_name",
+    "spotify_episode_uri",
+    "audiobook_title",
+    "audiobook_uri",
+    "audiobook_chapter_uri",
+    "audiobook_chapter_title",
+    "reason_start",
+    "reason_end",
+    "shuffle",
+    "skipped",
+    "offline",
+    "offline_timestamp",
+    "incognito_mode",
+]
+
+
+def read_file(name: str) -> SongInfoArray:
+    with open(name, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def extract_filtered(song_info_obj, filters: list[SongAttributes]) -> FilteredTrackInfo:
+    filtered = {}
+    for filter in filters:
+        filtered[filter] = song_info_obj[filter]
+    return cast(FilteredTrackInfo, filtered)
+
+
+# Unzips the spotify data zip file and compiles all the Audio Listening History json files into one singular json.
+# Returns the path of the compiled json file
+def process_zip(filepath: str, filters: list[SongAttributes]):
+    filename = path.basename(filepath).split(".")[0]
+    print(f"Filename {filename}")
+
+    zip_extract_path = path.join(
+        path.dirname(filepath),
+        filename,  # directory name same as filename
+    )
+
+    print(f"{zip_extract_path=}")
+    out_json_path = path.join(path.dirname(filepath), filename + ".json")
+
+    with zipfile.ZipFile(filepath) as __zipfile:
+        __zipfile.extractall(path=zip_extract_path)
+
+    if "Spotify Extended Streaming History" not in os.listdir(zip_extract_path):
+        raise TypeError(
+            "Zip file is not spotify data, it must contain a folder named 'Spotify Extended Streaming History'"
+        )
+
+    data_folder = path.join(zip_extract_path, "Spotify Extended Streaming History")
+
+    if path.exists(data_folder) is False:
+        raise RuntimeError(f"Cannot path for {data_folder=}")
+
+    files = [
+        os.path.join(data_folder, file)
+        for file in os.listdir(data_folder)
+        if file.startswith(
+            "Streaming_History_Audio"
+        )  # only including the Audio History files
+    ]
+
+    songs = [song for file in files for song in read_file(file)]
+    filtered = [extract_filtered(song, filters) for song in songs]
+    tracks = pd.DataFrame(filtered)
+
+    tracks.to_json(out_json_path, date_format="iso", orient="records")
+
+    # cleanup
+    # os.remove(filepath)
+    shutil.rmtree(zip_extract_path)
+    return out_json_path
+
+# utils/series_textellipses.py
+from pandas import Series
+
+# Clips and appends ellipses (...) for string values in series greater than characters
+def index_ellipses(ser: Series, characters: int):
+    indexes = list(ser.index.copy(deep=True))
+
+    for idx in range(len(indexes)):
+        if len(indexes[idx]) > characters:
+            indexes[idx] = indexes[idx][:characters] + "..."
+
+    ser.index = indexes
+
+# utils/series_textwrap.py
+import textwrap
+from pandas import Series
+
+
+# Wraps the series indexes to width number of characters
+def index_wrap(ser: Series, width: int):
+    # Series passed as reference
+    ser.index = [textwrap.fill(l, width=width) for l in ser.index.values]  # type: ignore
+
+# utils/fuzzy_searchers.py
+# Fuzzy searching artists / track name
+from rapidfuzz import fuzz
+import pandas as pd
+from typing import Literal
+
+
+# Fuzzy searcher searches for given word in a series, dataframe, or list of strings
+# and return the closest matches sorted in descending order of confidence
+# For searching within single worded sequences prefer partial ratio (example for artist names)
+# and for multi word sequences prefer token set ratio (example Track names)
+def fuzzy_search(
+    phrase: str,
+    sequence: pd.DataFrame | pd.Series | list[str],
+    _search_type: Literal["partial ratio", "token set ratio"],
+    *,
+    confidence: int = 80,
+    col_name: str | None = None,
+    top_n=5,
+):
+    search_type = 0 if (_search_type == "partial ratio") else 1
+
+    if type(sequence) is pd.DataFrame:
+        if col_name is None:
+            raise ValueError(
+                "Must provide a columnn name to fuzzy search when sequence is a DataFrame"
+            )
+        data = sequence[col_name].values
+
+    elif type(sequence) is pd.Series:
+        if col_name is not None:
+            raise ValueError("Cannot provide a col_name if sequence is of type Series")
+        data = sequence.values
+
+    elif isinstance(sequence, list):
+        data = sequence
+
+    else:
+        raise (
+            TypeError(
+                f"Type of sequence must be pd.Series, pd.Dataframe or list[str] and not {type(sequence)}"
+            )
+        )
+
+    if not isinstance(sequence[0], str):
+        raise (TypeError("Values of sequence can only be of type string"))
+
+    matched = []
+    ratios = []
+    for value in data:
+        if value is not None:
+            if search_type == 0:
+                ratio = fuzz.partial_ratio(phrase.lower(), value.lower())
+            else:
+                ratio = fuzz.token_set_ratio(phrase.lower(), value.lower())
+
+            if (ratio >= confidence) and (value not in matched):
+                matched.append(value)
+                ratios.append(ratio)
+
+    return [
+        value
+        for value, _ in sorted(
+            [(value, ratio) for value, ratio in zip(matched, ratios)],
+            key=lambda p: p[1],
+            reverse=True,
+        )[:top_n]
+    ]
+
+# utils/plots.py
 # https://github.com/d1vij/spotify-data-analysis/tree/ffc4be093155d40d2be87b00373c749324317c68
 
 
@@ -522,3 +833,109 @@ class Plots:
         Plots.simple_barplot(
             yearwise_playtime, "Yearwise playtime in minutes", "Year", "Minutes Played"
         )
+
+# utils/fig_to_uri.py
+from io import BytesIO
+from matplotlib.figure import Figure
+
+FORMAT = "png"
+
+
+# Matplotlib figure to dataUri
+def get_uri(fig: Figure):
+    if not isinstance(fig, Figure):
+        raise TypeError("Passed object must be of type matplotlib.figure.Figure")
+    buffer = BytesIO()
+    fig.savefig(buffer, format=FORMAT)
+    return buffer.getvalue().decode("utf-8")
+
+# utils/filters.py
+import pandas as pd
+
+df_or_series = pd.DataFrame | pd.Series
+
+
+# Filters to filter row data based on values
+class Filters:
+    @staticmethod
+    def rows_gt(value: int | float, obj: df_or_series):
+        if type(obj) is pd.Series:
+            return obj[obj > value]
+        elif type(obj) is pd.DataFrame:
+            return obj[(obj > value).all(axis=1)]
+        else:
+            raise TypeError("Can filter only Series or DataFrame objects")
+
+    @staticmethod
+    def rows_lt(value: int | float, obj: df_or_series):
+        if type(obj) is pd.Series:
+            return obj[obj < value]
+        elif type(obj) is pd.DataFrame:
+            return obj[(obj < value).all(axis=1)]
+        else:
+            raise TypeError("Can filter only Series or DataFrame objects")
+
+    @staticmethod
+    def rows_lteq(value: int | float, obj: df_or_series):
+        if type(obj) is pd.Series:
+            return obj[obj <= value]
+        elif type(obj) is pd.DataFrame:
+            return obj[(obj <= value).all(axis=1)]
+        else:
+            raise TypeError("Can filter only Series or DataFrame objects")
+
+    @staticmethod
+    def rows_gteq(value: int | float, obj: df_or_series):
+        if type(obj) is pd.Series:
+            return obj[obj >= value]
+        elif type(obj) is pd.DataFrame:
+            return obj[(obj >= value).all(axis=1)]
+        else:
+            raise TypeError("Can filter only Series or DataFrame objects")
+
+    @staticmethod
+    def non_zero_rows(obj: df_or_series):
+        if type(obj) is pd.Series:
+            return obj[obj != 0]
+        elif type(obj) is pd.DataFrame:
+            return obj[(obj != 0).any(axis=1)]
+        else:
+            raise TypeError("Can filter only Series or DataFrame objects")
+
+# utils/extract_from_timestamp.py
+import re
+from typing import Literal
+
+timestamp_regex = r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$"
+pattern = re.compile(timestamp_regex)
+
+
+# 2020-11-27T07:19:29Z
+def extract_from_timestamp(
+    what: Literal[
+        "year", "month", "day", "date", "hour", "minute", "seconds", "time-24"
+    ],
+    timestamp: str,
+):
+    m = re.match(pattern, timestamp)
+    if m is None:
+        raise ValueError("Cannot find match in timestamp " + timestamp)
+    match what:
+        case "year":
+            return m.group(1)
+        case "month":
+            return m.group(2)
+        case "day":
+            return m.group(3)
+        case "date":
+            return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        case "hour":
+            return m.group(4)
+
+        case "minute":
+            return m.group(5)
+        case "seconds":
+            return m.group(6)
+        case "time-24":
+            return f"{m.group(4)}:{m.group(5)}:{m.group(6)}"
+
