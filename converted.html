@@ -206,8 +206,14 @@ pd.set_option(&quot;display.expand_frame_repr&quot;, False)
 
 from utils.plots import Plots</code></pre><div class="output"></div></div><div class="cell"><pre class="language-python"><code class="language-python">from utils.process_zip import SongAttributes
 from utils.process_zip import process_zip
+from os.path import exists, abspath
 
-zip_path = &quot;./data/divij.zip&quot;
+try:
+    while(True):
+        zip_path = abspath(input(&quot;Path of zip file?? : &quot;))
+        if(exists(zip_path)): break
+except:
+    zip_path = abspath(&quot;./data/my_spotify_data(1).zip&quot;) 
 filters: list[SongAttributes] = [
     &quot;ts&quot;,
     &quot;ms_played&quot;,
@@ -221,8 +227,8 @@ compiled_json_path = process_zip(zip_path, filters)
 df = pd.read_json(compiled_json_path)
 
 # Converting the ts column to datetime object
-df[&quot;ts&quot;] = pd.to_datetime(df[&quot;ts&quot;])</code></pre><div class="output"><div class="output-text">Filename divij
-zip_extract_path='./data/divij'
+df[&quot;ts&quot;] = pd.to_datetime(df[&quot;ts&quot;])</code></pre><div class="output"><div class="output-text">Filename my_spotify_data(1)
+zip_extract_path='/home/divij/coding/projects/spotify-data-analysis/data/my_spotify_data(1)'
 </div></div></div><div class="cell"><pre class="language-python"><code class="language-python"># Saving to csv
 csv = df.head().to_csv()
 print(csv)</code></pre><div class="output"><div class="output-text">,ts,ms_played,master_metadata_track_name,master_metadata_album_artist_name,master_metadata_album_album_name,spotify_track_uri
@@ -1218,6 +1224,8 @@ def extract_from_timestamp(
             return m.group(6)
         case &quot;time-24&quot;:
             return f&quot;{m.group(4)}:{m.group(5)}:{m.group(6)}&quot;
+
+# utils/__init__.py
 
 </code></pre></div>
 
