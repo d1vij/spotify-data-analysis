@@ -15,7 +15,7 @@ def fuzzy_search(
     *,
     confidence: int = 80,
     col_name: str | None = None,
-    top_n=5,
+    top_n=5, # If negative, returns matched words
 ):
     search_type = 0 if (_search_type == "partial ratio") else 1
 
@@ -57,11 +57,15 @@ def fuzzy_search(
                 matched.append(value)
                 ratios.append(ratio)
 
-    return [
+    artists = [
         value
         for value, _ in sorted(
             [(value, ratio) for value, ratio in zip(matched, ratios)],
             key=lambda p: p[1],
             reverse=True,
-        )[:top_n]
+        )
     ]
+    if(top_n < 0):
+        return artists
+    else:
+        return artists[:top_n]

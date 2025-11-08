@@ -3,17 +3,10 @@ from typing import cast
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from utils.series_textwrap import index_wrap
-from utils.series_textellipses import index_ellipses
 from utils.filters import Filters
+from utils.series_textwrap import index_wrap
 
-from plotters.double_lineplot import double_lineplot
-from plotters.simple_barplot import simple_barplot 
-from plotters.plot_squarify import plot_squarify
-
-from analysis_plots.daily_tracks_graph import daily_tracks_graph
-from analysis_plots.track_playtime_kde_dist import track_playtime_kde_dist
-from analysis_plots.daily_listening_activity import daily_listening_activity
+from utils.plot_sources.plotters.plot_squarify import plot_squarify
 
 def top_n_artists_by_playtime(df: pd.DataFrame, n: int):
     # Top artists by playtime

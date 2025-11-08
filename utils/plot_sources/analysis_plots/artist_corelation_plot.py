@@ -28,5 +28,5 @@ def get_probability_matrix(df: pd.DataFrame):
     # normalizing means dividing each row of co-occurance matrix by the total votes in that row
     # the matrix gives the probabilty of person b (x axis) being voted when person A (y axis) was voted
     probability_matrix = co_occurance_matrix.div(co_occurance_matrix.sum(axis=1), axis=0)
-
+    print(probability_matrix)
     return probability_matrix

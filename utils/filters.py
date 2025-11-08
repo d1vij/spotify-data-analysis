@@ -2,7 +2,6 @@ import pandas as pd
 
 df_or_series = pd.DataFrame | pd.Series
 
-
 # Filters to filter row data based on values
 class Filters:
     @staticmethod

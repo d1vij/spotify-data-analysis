@@ -13,6 +13,14 @@ echo "Baking pie"
 .venv/bin/python3 bake.py
 
 echo "Converting jupyternotebook to html"
-/usr/bin/env node converter.js project.ipynb "#fff" "#fff" "#fff"
 
+if [[ ! command -v node ]]; then
+    echo "Node is not installed!!"
+    echo "It is required to convert ipynb to html"
+    echo "Alternatively you can use web based converter on https://convert-ipynb.projects.divij.xyz"
+    exit 1;
+fi
+
+echo "TODO FIX COLORS"
+/usr/bin/env node converter.js project.ipynb "#fff" "#fff" "#fff"
 echo "Converted project.ipynb to converted.html"
