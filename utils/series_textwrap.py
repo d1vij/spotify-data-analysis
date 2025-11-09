@@ -6,3 +6,8 @@ from pandas import Series
 def index_wrap(ser: Series, width: int):
     # Series passed as reference
     ser.index = [textwrap.fill(l, width=width) for l in ser.index.values]  # type: ignore
+
+
+def list_wrap(l: list, width: int):
+    # Series passed as reference
+    return list(textwrap.fill(t, width=width) for t in l)

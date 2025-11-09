@@ -1,5 +1,6 @@
 from pandas import Series
 
+
 # Clips and appends ellipses (...) for string values in series greater than characters
 def index_ellipses(ser: Series, characters: int):
     indexes = list(ser.index.copy(deep=True))

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
+
 def variability_in_artists_and_tracks(df: pd.DataFrame, _ax=None):
     fig = None
 

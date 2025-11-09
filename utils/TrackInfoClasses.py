@@ -1,4 +1,6 @@
 from typing import TypedDict, Literal, Optional, cast
+
+
 class TrackInfo(TypedDict, total=True):
     ts: str
     platform: str

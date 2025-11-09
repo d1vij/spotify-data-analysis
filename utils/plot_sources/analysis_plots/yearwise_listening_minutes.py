@@ -1,6 +1,7 @@
 import pandas as pd
 from plotters.simple_barplot import simple_barplot
 
+
 def yearwise_listening_minutes(df: pd.DataFrame):
     copy = df.copy(True)
     copy["ts"] = copy["ts"].dt.year

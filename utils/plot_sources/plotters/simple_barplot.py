@@ -3,10 +3,12 @@ import seaborn as sns
 from squarify import squarify
 import matplotlib.pyplot as plt
 
-def simple_barplot(y: pd.Series, title: str, xlabel, ylabel, ax=None):
-    if ax is None:
+
+def simple_barplot(y: pd.Series, title: str, xlabel, ylabel, _ax=None):
+    if _ax is None:
         fig, ax = plt.subplots(figsize=(7, 5))
-        sns.barplot(x=y.index, y=y.values, palette="pastel", hue=y.index)  # type: ignore
+    else:
+        ax = _ax
 
     sns.barplot(x=y.index, y=y.values, palette="pastel", hue=y.index, ax=ax)  # type: ignore
     for container in ax.containers:

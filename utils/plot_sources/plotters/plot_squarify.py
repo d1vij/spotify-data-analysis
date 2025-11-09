@@ -3,9 +3,12 @@ import seaborn as sns
 import squarify
 import matplotlib.pyplot as plt
 
-def plot_squarify(ser: pd.Series, title, ax=None):
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(10, 10))
+
+def plot_squarify(ser: pd.Series, title, _ax=None):
+    if _ax is None:
+        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    else:
+        ax = _ax
 
     squarify.plot(
         sizes=ser.values,
@@ -22,5 +25,5 @@ def plot_squarify(ser: pd.Series, title, ax=None):
 
     ax.set_title(title, fontsize=23)
 
-    if ax is None:
+    if _ax is None:
         plt.show()

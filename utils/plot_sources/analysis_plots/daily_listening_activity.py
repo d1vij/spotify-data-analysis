@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from utils.smoothen import smoothen
 
+
 def daily_listening_activity(df: pd.DataFrame, _ax=None):
     fig = None
 

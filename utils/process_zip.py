@@ -8,6 +8,7 @@ import pandas as pd
 
 from utils.TrackInfoClasses import *
 
+
 def read_file(name: str) -> SongInfoArray:
     with open(name, "r", encoding="utf-8") as file:
         return json.load(file)
@@ -24,14 +25,14 @@ def extract_filtered(song_info_obj, filters: list[SongAttributes]) -> FilteredTr
 # Returns the path of the compiled json file
 def process_zip(filepath: str, filters: list[SongAttributes]):
     filename = path.basename(filepath).split(".")[0]
-    print(f"Filename {filename}")
+    # print(f"Filename {filename}")
 
     zip_extract_path = path.join(
         path.dirname(filepath),
         filename,  # directory name same as filename
     )
 
-    print(f"{zip_extract_path=}")
+    # print(f"{zip_extract_path=}")
     out_json_path = path.join(path.dirname(filepath), filename + ".json")
 
     with zipfile.ZipFile(filepath) as __zipfile:

@@ -5,6 +5,7 @@ from datetime import datetime
 
 from utils.filters import Filters
 
+
 def daily_tracks_graph(df: pd.DataFrame, _ax=None):
     fig = None
     # daily number of songs listend to
@@ -13,11 +14,9 @@ def daily_tracks_graph(df: pd.DataFrame, _ax=None):
     # filtering out skipped tracks
     daywise_plays_df = daywise_plays_df[daywise_plays_df["ms_played"] >= 1e4]
     daywise_plays_df.sort_values("ts", inplace=True)
-    dates = daywise_plays_df["ts"].apply(
-        lambda ts: datetime.strftime(ts, "%Y-%m-%d")
-    )
+    dates = daywise_plays_df["ts"].apply(lambda ts: datetime.strftime(ts, "%Y-%m-%d"))
     datewise_track_count_ser = dates.groupby(dates).count()
-    datewise_track_count_ser = Filters.rows_gt(0, datewise_track_count_ser);
+    datewise_track_count_ser = Filters.rows_gt(0, datewise_track_count_ser)
     min_date = dates.min()
     max_date = dates.max()
     if not max_date >= min_date:
@@ -51,7 +50,8 @@ def daily_tracks_graph(df: pd.DataFrame, _ax=None):
     )
     ax.set_title("Number of tracks played daily")
     sns.despine()
-    ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), frameon=True)
+    ax.legend(loc="center right", bbox_to_anchor=(1, 0.5), frameon=True)
+    ax.set_ylim(bottom=1)
 
     if fig is not None:
         fig.tight_layout()

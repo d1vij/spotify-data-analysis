@@ -8,6 +8,7 @@ from datetime import datetime
 
 from utils.filters import Filters
 
+
 def track_playtime_kde_dist(df: pd.DataFrame, _ax: list[Axes] | None = None):
     fig = None
     track_playtime_ser = df["ms_played"].copy(True)
