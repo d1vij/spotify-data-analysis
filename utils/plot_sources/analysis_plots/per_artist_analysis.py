@@ -69,7 +69,6 @@ def __relative_artist_analysis(
             unique_artists_df["artist_name"] == artist_name, "country"
         ].iat[0]
 
-        print(artist_country)
     # Common artists from the same country as our artist
     same_country_artists_names = unique_artists_df.loc[
         artists_df["country"] == artist_country, "artist_name"
@@ -88,9 +87,9 @@ def __relative_artist_analysis(
     )
 
     artist_rank = cast(
-        int, same_country_artists_playtime_ser.index.get_loc(artist_name)
+        int, same_country_artists_playtime_ser.index.get_loc(artist_name) #type: ignore
     )
-
+    artist_rank += 1
     # How many artists to consider on either side
     delta = 3
     if artist_rank <= 0:
@@ -144,10 +143,10 @@ def analysis_per_artist(
     )
 
     # Setting up plot grid
-    fig = plt.figure(figsize=(18, 26), constrained_layout=False)
+    fig = plt.figure(figsize=(18, 24), constrained_layout=False)
 
     grid = fig.add_gridspec(
-        5, 2, height_ratios=[2.5, 1, 1, 1.5, 1.5], hspace=0.4, wspace=0.3
+        5, 2, height_ratios=[2.5, 1, 1, 1,1.5], hspace=0.4, wspace=0.3
     )
 
     # 1x2

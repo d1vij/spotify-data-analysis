@@ -1,33 +1,47 @@
 import os
-import subprocess
 
-build_pie_path = "baked_pie.py"
-sources = ["utils"]
+def readdir(root_path:str, components: list[str]):
+    if (os.path.basename(root_path) == "__pycache__"):
+        return
+    if(os.path.isfile(root_path)):
+        # What are you doing here >:(
+        readfile(root_path, components)
+        return
+    print("Reading dir", root_path)
 
-dirname = os.path.dirname(__file__)
-sources = [os.path.abspath(os.path.join(dirname, path)) for path in sources]
+    for sub_path in os.listdir(root_path):
+        sub_path = os.path.abspath(os.path.join(root_path, sub_path))
 
-if not os.path.exists(build_pie_path):
-    with open(build_pie_path, "x+") as file:
-        file.write("")
-else:
-    with open(build_pie_path, "w") as file:
-        file.write("")
+        if(os.path.isdir(sub_path)):
+            readdir(sub_path, components)
+        else:
+            readfile(sub_path, components)
 
-for path in sources:
-    print(f"Current path: {path}")
+def readfile(sub_path: str, components:list[str]):
+    with open(sub_path, "r") as file:
+        print("Reading file", sub_path)
 
-    files = [
-        os.path.join(path, file) for file in os.listdir(path) if file.endswith(".py")
+        if(os.path.basename(sub_path).split('.')[1] == "csv"):
+            components.append(f"#->> {sub_path} \n\"\"\"\n{file.read()}\n\"\"\"")
+        else:
+            components.append(f"#->> {sub_path} \n{file.read()}")
+    
+def main():
+    dirname = os.path.dirname(__file__)
+    built_pie_path = os.path.abspath(os.path.join(dirname, "..", "built.pie"))
+
+    roots = [
+        os.path.abspath(os.path.join(dirname, "../utils")),
+        # os.path.abspath(os.path.join(dirname, "../ext_data/global_music_artists.csv")),
     ]
-    print(f"Files found: {len(files)}")
 
-    for filepath in files:
-        with open(filepath, "r", encoding="utf-8") as file:
-            content = file.read()
+    components: list[str] = []
+    for root in roots:
+        readdir(root, components) 
 
-            with open(build_pie_path, "a") as file:
-                file.write(f"# {os.path.relpath(filepath)}\n")
-                file.write(content)
-                file.write("\n")
-                print(f"{filepath} written.")
+    with open(built_pie_path, "w+") as file:
+        file.write("\n\n".join(components))
+    print("Built at", built_pie_path)
+
+if __name__ == "__main__":
+    main()
