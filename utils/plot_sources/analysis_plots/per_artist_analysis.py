@@ -1,4 +1,4 @@
-import re
+import warnings
 from typing import cast
 from datetime import datetime
 
@@ -59,11 +59,9 @@ def __relative_artist_analysis(
         artists_df["artist_name"].isin(unique_artists_name)
     ]
 
-    # Number of artists from a particular country
-    artist_countries_count_ser = unique_artists_df["country"].value_counts()
-
     if artist_name not in unique_artists_df["artist_name"].values:
-        raise ValueError(f"No country found for artist {artist_name}")
+        warnings.warn(f"No country found for artist {artist_name}, proceeding with no country based analysis")
+        return
     else:
         artist_country = unique_artists_df.loc[
             unique_artists_df["artist_name"] == artist_name, "country"
