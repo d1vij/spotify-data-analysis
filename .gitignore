@@ -5,4 +5,4 @@ my_spotify_data.zip
 API_KEYS
 node_modules
 **/.ruff_cache/
-.ipynb_checkpoints
+.ipynb_checkpoints/
