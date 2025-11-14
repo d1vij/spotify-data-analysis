@@ -11,7 +11,7 @@
 raise SystemError
 
 
-###### /home/divij/coding/projects/spotify-data-analysis/utils/smoothen.py #####
+####### /home/divij/coding/repos/spotify-data-analysis/utils/smoothen.py #######
 
 
 from scipy.interpolate import make_interp_spline
@@ -34,7 +34,7 @@ def smoothen(ser: pd.Series, amount: int):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/jupyter_configs/imagestyling.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/jupyter_configs/imagestyling.py 
 
 
 from IPython.core.display import HTML
@@ -49,7 +49,7 @@ HTML('''
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/jupyter_configs/loadcell.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/jupyter_configs/loadcell.py 
 
 
 from IPython.core.magic import Magics, magics_class, line_magic
@@ -74,7 +74,7 @@ ip = get_ipython()
 ip.register_magics(LoadNextMagics)
 
 
-#### /home/divij/coding/projects/spotify-data-analysis/utils/process_zip.py ####
+###### /home/divij/coding/repos/spotify-data-analysis/utils/process_zip.py #####
 
 
 import os
@@ -148,7 +148,7 @@ def process_zip(filepath: str, filters: list[SongAttributes]):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/series_textellipses.py 
+## /home/divij/coding/repos/spotify-data-analysis/utils/series_textellipses.py #
 
 
 from pandas import Series
@@ -166,7 +166,7 @@ def index_ellipses(ser: Series, characters: int):
 
 
 
-## /home/divij/coding/projects/spotify-data-analysis/utils/TrackInfoClasses.py #
+### /home/divij/coding/repos/spotify-data-analysis/utils/TrackInfoClasses.py ###
 
 
 from typing import TypedDict, Literal, Optional, cast
@@ -304,7 +304,7 @@ SongAttributes = Literal[
 
 
 
-## /home/divij/coding/projects/spotify-data-analysis/utils/series_textwrap.py ##
+#### /home/divij/coding/repos/spotify-data-analysis/utils/series_textwrap.py ###
 
 
 import textwrap
@@ -323,7 +323,7 @@ def list_wrap(l: list, width: int):
 
 
 
-## /home/divij/coding/projects/spotify-data-analysis/utils/fuzzy_searchers.py ##
+#### /home/divij/coding/repos/spotify-data-analysis/utils/fuzzy_searchers.py ###
 
 
 # Fuzzy searching artists / track name
@@ -400,7 +400,7 @@ def fuzzy_search(
 
 
 
-### /home/divij/coding/projects/spotify-data-analysis/utils/generate_frame.py ##
+#### /home/divij/coding/repos/spotify-data-analysis/utils/generate_frame.py ####
 
 
 from os.path import isfile, abspath
@@ -443,7 +443,7 @@ def generate_frame():
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/data_cleaning/clean_global_music_artists.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/data_cleaning/clean_global_music_artists.py 
 
 
 import pandas as pd
@@ -463,7 +463,7 @@ df.to_csv(csv_path, index=False)
 
 
 
-###### /home/divij/coding/projects/spotify-data-analysis/utils/printers.py #####
+####### /home/divij/coding/repos/spotify-data-analysis/utils/printers.py #######
 
 
 import chalk
@@ -546,7 +546,7 @@ class Printer:
 
 
 
-###### /home/divij/coding/projects/spotify-data-analysis/utils/filters.py ######
+######## /home/divij/coding/repos/spotify-data-analysis/utils/filters.py #######
 
 
 import pandas as pd
@@ -603,7 +603,7 @@ class Filters:
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/yearwise_listening_minutes.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/yearwise_listening_minutes.py 
 
 
 import pandas as pd
@@ -620,7 +620,7 @@ def yearwise_listening_minutes(df: pd.DataFrame):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/daily_listening_activity.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/daily_listening_activity.py 
 
 
 import pandas as pd
@@ -703,7 +703,7 @@ def daily_listening_activity(df: pd.DataFrame, _ax=None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/variability_in_artists_and_tracks.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/variability_in_artists_and_tracks.py 
 
 
 import pandas as pd
@@ -814,7 +814,7 @@ def variability_in_artists_and_tracks(df: pd.DataFrame, _ax=None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/per_artist_analysis.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/per_artist_analysis.py 
 
 
 import warnings
@@ -1139,7 +1139,7 @@ def interactive_per_artist_analysis(
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/daily_tracks_graph.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/daily_tracks_graph.py 
 
 
 import pandas as pd
@@ -1205,7 +1205,7 @@ def daily_tracks_graph(df: pd.DataFrame, _ax=None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/artist_corelation_plot.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/artist_corelation_plot.py 
 
 
 from typing import Literal
@@ -1285,7 +1285,7 @@ def artist_correlation_plot(df: pd.DataFrame):
     )
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/track_playtime_kde_dist.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/track_playtime_kde_dist.py 
 
 
 import pandas as pd
@@ -1378,7 +1378,7 @@ def track_playtime_kde_dist(df: pd.DataFrame, _ax: list[Axes] | None = None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/top_n.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/top_n.py 
 
 
 from os import path
@@ -1556,14 +1556,14 @@ def top_analysis(df: pd.DataFrame,artists_df: pd.DataFrame, ):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/analysis_plots/__init__.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/analysis_plots/__init__.py 
 
 
 # Functions utilizing the generic plotters to plot analysis
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/plotters/plot_heatmap.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/plotters/plot_heatmap.py 
 
 
 import pandas as pd
@@ -1602,7 +1602,7 @@ def plot_heatmap(
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/plotters/double_lineplot.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/plotters/double_lineplot.py 
 
 
 import seaborn as sns
@@ -1658,7 +1658,7 @@ def double_lineplot(
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/plotters/plot_squarify.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/plotters/plot_squarify.py 
 
 
 import pandas as pd
@@ -1693,7 +1693,7 @@ def plot_squarify(ser: pd.Series, title, _ax=None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/plotters/simple_barplot.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/plotters/simple_barplot.py 
 
 
 import pandas as pd
@@ -1724,26 +1724,26 @@ def simple_barplot(y: pd.Series, title: str, xlabel, ylabel, _ax=None):
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/plotters/__init__.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/plotters/__init__.py 
 
 
 # Generic plotters
 
 
 
-# /home/divij/coding/projects/spotify-data-analysis/utils/plot_sources/__init__.py 
+# /home/divij/coding/repos/spotify-data-analysis/utils/plot_sources/__init__.py 
 
 
 
 
 
-###### /home/divij/coding/projects/spotify-data-analysis/utils/__init__.py #####
+####### /home/divij/coding/repos/spotify-data-analysis/utils/__init__.py #######
 
 
 
 
 
-####### /home/divij/coding/projects/spotify-data-analysis/scripts/bake.py ######
+######## /home/divij/coding/repos/spotify-data-analysis/scripts/bake.py ########
 
 
 import os
@@ -1812,7 +1812,7 @@ if __name__ == "__main__":
     main()
 
 
-###### /home/divij/coding/projects/spotify-data-analysis/scripts/build.sh ######
+######## /home/divij/coding/repos/spotify-data-analysis/scripts/build.sh #######
 
 """
 #!/usr/bin/env bash
@@ -1843,10 +1843,13 @@ echo "TODO FIX COLORS"
 echo "Converted project.ipynb to converted.html"
 """
 
-###### /home/divij/coding/projects/spotify-data-analysis/scripts/export.sh #####
+####### /home/divij/coding/repos/spotify-data-analysis/scripts/export.py #######
 
-"""
-#!/usr/bin/env bash
-.venv/bin/python3 -m jupyter nbconvert --to html --no-prompt project.ipynb --output-dir="./build"
 
-"""
+import subprocess
+
+# .venv/bin/python3 -m jupyter nbconvert --to html --no-prompt project.ipynb --output-dir="./build"
+
+
+if (__name__ == "__main__"):
+    subprocess.run(["jupyter", "nbconvert", "--to", "html", "--no-prompt", "project.ipynb", "--output-dir=\"./build\""])
