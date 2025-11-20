@@ -1,3 +1,5 @@
+# Generates analysis for each artist
+
 import warnings
 from typing import cast
 from datetime import datetime
@@ -24,7 +26,11 @@ from utils.plot_sources.analysis_plots.daily_listening_activity import (
 )
 from utils.fuzzy_searchers import fuzzy_search
 
-def __bar_plot(heights, labels, target: str, title: str, *, _ax=None):
+
+# Another generic bar plot plotter
+def __bar_plot(
+    heights, labels, target: str, title: str, x_label: str, y_labels: str, *, _ax=None
+):
     blue = "#5EABD6"
     red = "#EF5A6F"
 
@@ -38,9 +44,11 @@ def __bar_plot(heights, labels, target: str, title: str, *, _ax=None):
     sns.barplot(x=list_wrap(labels, 12), y=heights, palette=colors, ax=ax)
 
     ax.set_title(title)
-    ax.set_xlabel("Artists")
-    ax.set_ylabel("Playtime in hours")
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_labels)
     ax.set_ylim(top=max(heights) + 10)
+
+    # Patches allow to for setting up custom legends
     patches = [
         mpatch.Patch(label=f"{name} - {playtime}", facecolor=color)
         for (name, playtime, color) in zip(labels, heights, colors)
@@ -51,15 +59,25 @@ def __bar_plot(heights, labels, target: str, title: str, *, _ax=None):
         plt.show()
 
 
+# Analyzing provided artist with artists from same country or with similar ranking
 def __relative_artist_analysis(
-    artist_name: str, user_df: pd.DataFrame, artists_df: pd.DataFrame, ax1, ax2
+    artist_name: str,
+    frame: pd.DataFrame,  # User's history dataframe
+    artists_df: pd.DataFrame,  # Artist metadata dataframe
+    ax1,
+    ax2,
 ):
-    unique_artists_name = user_df["master_metadata_album_artist_name"].unique()
-    # Extracting rows for only those artists which are in user's data
+
+    # All the unique artists from my listening history
+    unique_artists_name = frame["master_metadata_album_artist_name"].unique()
+
+    # Extracting rows from the artist metadata dataframe,
+    # for only those artists which are in user's listening history dataframe
     unique_artists_df = artists_df.loc[
         artists_df["artist_name"].isin(unique_artists_name)
     ]
 
+    # Identifying the country of my artist from the artist metadata dataframe
     if artist_name not in unique_artists_df["artist_name"].values:
         warnings.warn(
             f"No country found for artist {artist_name}, proceeding with no country based analysis"
@@ -76,8 +94,8 @@ def __relative_artist_analysis(
     ]
 
     same_country_artists_playtime_ser = (
-        user_df.loc[
-            user_df["master_metadata_album_artist_name"].isin(
+        frame.loc[
+            frame["master_metadata_album_artist_name"].isin(
                 same_country_artists_names  # type: ignore
             ),
             ["master_metadata_album_artist_name", "ms_played"],
@@ -87,16 +105,28 @@ def __relative_artist_analysis(
         .sort_values(ascending=False)
     )
 
+    # Getting the rank of my artist
+    # Rank is just the index number of my artist in the playtime series
     artist_rank = cast(
         int,
         same_country_artists_playtime_ser.index.get_loc(artist_name),  # type: ignore
     )
+    
+    # Since the indexes start at 0
     artist_rank += 1
-    # How many artists to consider on either side
-    delta = 3
+    
+    # Edge case senario
     if artist_rank <= 0:
         raise ValueError(f"artist_rank cannot be lesser than 1. It is {artist_rank}")
 
+    
+
+    # How many artists to consider on either side
+    delta = 3
+
+    # Determining the indexes of nearby artists wrt the ranking of my artist
+    # for example, if my artist ranks 10th, then the slice range of nearby artists 
+    # would be from (10 - delta) to (10 + delta) (exclusive), ie from 7 to 13 (exclusive)
     if artist_rank <= delta:
         # Whatever the rank is, we will always display data for (2*delta) + 1 artists
         # It is not nessasary that the provided artist_name would be at the center of this distribution
@@ -114,8 +144,13 @@ def __relative_artist_analysis(
         surrounding_artists.index,
         artist_name,
         f"Playtime of {artist_name} relative to nearby ranking artists from same country.",
+        "Artists",
+        "Playtime in hours",
         _ax=ax1,
     )
+    
+
+    # The top artists of the country are just the first (2*delta) artists
     top_artists = same_country_artists_playtime_ser.iloc[: (2 * delta)]
 
     # If the artist is a top artist, it is possible that these two plots are same
@@ -125,10 +160,13 @@ def __relative_artist_analysis(
         top_artists.index,
         artist_name,
         f"Playtime of {artist_name} with relative to top artists from the same country.",
+        "Artists",
+        "Playtime in hours",
         _ax=ax2,
     )
 
 
+# Analyzing the albums of my artist
 def __artist_album_analysis(frame: pd.DataFrame, artist_name: str):
     # Wont filter here based on artist name cuz my dataframe already is filtered
     albums = frame.loc[
@@ -278,6 +316,8 @@ PROMPT = """What do you want to do ??
 """
 
 
+# Asks the user which top n artists to generate the analysis for
+# Top artists are determined on the basis of total playtime
 def __top_n_artist_analysis(frame: pd.DataFrame, artists_info_frame: pd.DataFrame):
     while True:
         try:
@@ -286,7 +326,7 @@ def __top_n_artist_analysis(frame: pd.DataFrame, artists_info_frame: pd.DataFram
         except:
             print("Unable to parse that value!!")
 
-    print(f"Generate analysis for how many top artists ??: {n}")
+    Printer.red_bold(f"Generate analysis for how many top artists ??: {n}")
 
     top_artists = (
         frame.groupby("master_metadata_album_artist_name")["ms_played"]
@@ -294,14 +334,19 @@ def __top_n_artist_analysis(frame: pd.DataFrame, artists_info_frame: pd.DataFram
         .sort_values(ascending=False)
     )
 
-    top_artists.head()
-
     for artist_name, _ in top_artists.head(n).items():
         artist_name = cast(str, artist_name)
         analysis_per_artist(frame, artist_name, artists_info_frame)
-        print(" ")
+        Printer.plain()
 
 
+# Asks the user name of the artist to generate the analysis for,
+# then the exact artist name is fuzzy finded.
+# Incase no match is found, the fuzzy finding is done again (recursively) with a lower confidence,
+# until either a match is found, or the confidence becomes lower than a threshold,
+# most often implying that no such artist exists as provided by the user.
+# Incase of multiple matches, the user is provided an option menu,
+# asking for the exact artist name.
 def __custom_artist_analysis(
     frame: pd.DataFrame,
     artists_info_frame: pd.DataFrame,
@@ -309,11 +354,15 @@ def __custom_artist_analysis(
     __confidence: int = 80,
     __artist_name: str | None = None,
 ):
+
+    # Either reuse the artist name provided by the lower confidence search, or ask the user for one
     artist_name = __artist_name or input("Input the name of the artist: ")
+
     if artist_name == "":
         print("Enter a valid name!!")
         return __custom_artist_analysis(frame, artists_info_frame)
-    print(f"Input the name of the artist: {artist_name}")
+
+    Printer.red_bold(f"Input the name of the artist: {artist_name}")
 
     artists_found = fuzzy_search(
         artist_name,
@@ -329,10 +378,10 @@ def __custom_artist_analysis(
         # No artists found after fuzzy searching
         if __confidence - 20 < 0:
             # Could not find any artist with that name even after lowering confidence.
-            print(f"Couldnt find any artist with name {artist_name}!!\n")
+            Printer.plain(f"Couldnt find any artist with name {artist_name}!!\n")
             return
 
-        print(
+        Printer.plain(
             f"Could not fuzzy search any artist with name {artist_name}, retrying with a lower confidence"
         )
         return __custom_artist_analysis(
@@ -344,12 +393,16 @@ def __custom_artist_analysis(
 
     elif artists_found_count > 1:
         # found more than 1 name match, ask user which one to consider
-        print(
+        Printer.red_bold(
             f"Found {artists_found_count} matches, select the number for which one to choose"
         )
 
-        for idx, name in enumerate(artists_found, start=1):
-            print(f"({idx}) {name}")
+        Printer.two_columns(
+            list(
+                f"{chalk.green(str(idx) + ".")} {artist}"
+                for (idx, artist) in enumerate(artists_found, 1)
+            )
+        )
 
         while True:
             try:
@@ -360,17 +413,17 @@ def __custom_artist_analysis(
             if option > 0 and option <= artists_found_count:
                 break
 
-        print(f"Showing analysis for {artists_found[option - 1]}")
         artist = artists_found[option - 1]
-
     else:
         # only one artist found
         artist = artists_found[0]
 
+    Printer.green(f"Showing analysis for {artist}")
     analysis_per_artist(frame, artist, artists_info_frame)
     return
 
 
+# Interactively ask the user for which to generate the analysis for
 def interactive_per_artist_analysis(
     frame: pd.DataFrame, artist_info_frame: pd.DataFrame
 ):

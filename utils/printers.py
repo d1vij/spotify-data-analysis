@@ -1,5 +1,4 @@
 import chalk
-from typing import Union
 
 
 class Printer:
@@ -24,14 +23,6 @@ class Printer:
     @staticmethod
     def blue(*args):
         print(chalk.blue(Printer._join(*args)))
-
-    @staticmethod
-    def magenta(*args):
-        print(chalk.magenta(Printer._join(*args)))
-
-    @staticmethod
-    def cyan(*args):
-        print(chalk.cyan(Printer._join(*args)))
 
     @staticmethod
     def white(*args):
@@ -70,19 +61,13 @@ class Printer:
         print(chalk.underline(chalk.blue(Printer._join(*args))))
 
     @staticmethod
-    def cyan_underline(*args):
-        print(chalk.underline(chalk.cyan(Printer._join(*args))))
-
-    @staticmethod
-    def magenta_underline(*args):
-        print(chalk.underline(chalk.magenta(Printer._join(*args))))
-
-    @staticmethod
     def plain(*args):
         print(Printer._join(*args))
 
     @staticmethod
     def two_columns(data: list[str]):
+        """accepts a string array and pretty prints it in two columns"""
+
         max_len = max(len(d) for (idx, d) in enumerate(data) if (idx % 2 == 0))
         for idx in range(0, len(data) - 1, 2):
             Printer.plain(data[idx].ljust(max_len), data[idx + 1])

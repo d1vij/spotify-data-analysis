@@ -1,7 +1,8 @@
 # Fuzzy searching artists / track name
-from rapidfuzz import fuzz
-import pandas as pd
 from typing import Literal
+
+import pandas as pd
+from rapidfuzz import fuzz
 
 
 # Fuzzy searcher searches for given word in a series, dataframe, or list of strings

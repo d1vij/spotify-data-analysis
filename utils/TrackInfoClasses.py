@@ -1,7 +1,12 @@
-from typing import TypedDict, Literal, Optional, cast
+from typing import TypedDict, Literal, Optional
 
 
 class TrackInfo(TypedDict, total=True):
+    """
+    Class describing each data object in spotify's listening history json file
+    Only there for type hinting and data reference
+    """
+
     ts: str
     platform: str
     ms_played: int
@@ -51,8 +56,8 @@ class TrackInfo(TypedDict, total=True):
     offline_timestamp: int
     incognito_mode: bool
 
-
 class FilteredTrackInfo(TypedDict):
+    """Class describing the each object of post-processed and filtered data"""
     ts: Optional[str]
     platform: Optional[str]
     ms_played: Optional[int]
@@ -103,8 +108,14 @@ class FilteredTrackInfo(TypedDict):
     incognito_mode: Optional[bool]
 
 
+# Json provided by spotify is in this format
 SongInfoArray = list[TrackInfo]
+
+# Once data is filtered by utils.process_zip.process_zip,
+# the compiled json is in this format
 FilteredSongInfoArray = list[FilteredTrackInfo]
+
+# Again for the sake of intellisense
 SongAttributes = Literal[
     "ts",
     "platform",

@@ -5,6 +5,10 @@ from IPython import get_ipython
 
 @magics_class
 class LoadNextMagics(Magics):
+    """
+    Custom magic command which reads and pastes the content of any file into the current notebook cell
+    """
+    
     @line_magic
     def loadnext(self, path):
         path = path.strip()

@@ -5,6 +5,13 @@ import matplotlib.pyplot as plt
 from utils.smoothen import smoothen
 
 
+# Generates a linechart with total minutes of track playtime for each part of the day
+# Parts of day is divided based on (24) hours, as follow
+# Late Night: 0 -> 4 th hour
+# Morning: 4 -> 11
+# Afternoons: 11 -> 16
+# Evenings: 16 -> 20
+# Nights: 20 -> 24
 def daily_listening_activity(df: pd.DataFrame, _ax=None):
     fig = None
 

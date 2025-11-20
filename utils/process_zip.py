@@ -1,5 +1,4 @@
 import os
-from os import path
 import shutil
 import zipfile
 
@@ -7,7 +6,6 @@ import json
 import pandas as pd
 
 from utils.TrackInfoClasses import *
-
 
 def read_file(name: str) -> SongInfoArray:
     with open(name, "r", encoding="utf-8") as file:
@@ -24,16 +22,16 @@ def extract_filtered(song_info_obj, filters: list[SongAttributes]) -> FilteredTr
 # Unzips the spotify data zip file and compiles all the Audio Listening History files into one singular json.
 # Returns the path of the compiled json file
 def process_zip(filepath: str, filters: list[SongAttributes]):
-    filename = path.basename(filepath).split(".")[0]
+    filename = os.path.basename(filepath).split(".")[0]
     # print(f"Filename {filename}")
 
-    zip_extract_path = path.join(
-        path.dirname(filepath),
+    zip_extract_path = os.path.join(
+        os.path.dirname(filepath),
         filename,  # directory name same as filename
     )
 
     # print(f"{zip_extract_path=}")
-    out_json_path = path.join(path.dirname(filepath), filename + ".json")
+    out_json_path = os.path.join(os.path.dirname(filepath), filename + ".json")
 
     with zipfile.ZipFile(filepath) as __zipfile:
         __zipfile.extractall(path=zip_extract_path)
@@ -43,10 +41,10 @@ def process_zip(filepath: str, filters: list[SongAttributes]):
             "Zip file is not spotify data, it must contain a folder named 'Spotify Extended Streaming History'"
         )
 
-    data_folder = path.join(zip_extract_path, "Spotify Extended Streaming History")
+    data_folder = os.path.join(zip_extract_path, "Spotify Extended Streaming History")
 
-    if path.exists(data_folder) is False:
-        raise RuntimeError(f"Cannot path for {data_folder=}")
+    if os.path.exists(data_folder) is False:
+        raise RuntimeError(f"Cannot os.path for {data_folder=}")
 
     files = [
         os.path.join(data_folder, file)

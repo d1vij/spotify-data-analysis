@@ -10,6 +10,8 @@ import chalk
 from typing import Optional
 
 
+# Plots a scatterplot for total tracks played daily
+# starting from first listen date uptil latest date
 def daily_tracks_graph(
     df: pd.DataFrame,
     _ax=None,
