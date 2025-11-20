@@ -5,9 +5,20 @@ from datetime import datetime
 
 from utils.filters import Filters
 
+from utils.printers import Printer
+import chalk
+from typing import Optional
 
-def daily_tracks_graph(df: pd.DataFrame, _ax=None):
+
+def daily_tracks_graph(
+    df: pd.DataFrame,
+    _ax=None,
+    print_analysis: bool = False,
+    *,
+    artist_name: Optional[str] = None,
+):
     fig = None
+
     # daily number of songs listend to
     daywise_plays_df = df[["ts", "ms_played"]].copy(True)
 
@@ -19,10 +30,34 @@ def daily_tracks_graph(df: pd.DataFrame, _ax=None):
     datewise_track_count_ser = Filters.rows_gt(0, datewise_track_count_ser)
     min_date = dates.min()
     max_date = dates.max()
+
     if not max_date >= min_date:
         raise RuntimeError(
             f"Start date {min_date} and End date {max_date} dont make sense"
         )  # accounting the edge case when user no listening history
+
+    if print_analysis:
+        if artist_name == None:
+            raise RuntimeError("No artist name passed")
+
+        Printer.plain()
+        Printer.blue_underline(
+            f"Daily tracks analysis for {chalk.underline(chalk.yellow(artist_name))}"
+        )
+
+        Printer.plain(f"First track played on date {chalk.yellow(min_date)}")
+        Printer.plain(f"Latest track played on {chalk.yellow(max_date)}")
+
+        daily_average = datewise_track_count_ser.mean()
+        Printer.plain(
+            f"You listened an average of {chalk.yellow(round(daily_average, 0))} tracks daily of {artist_name}"
+        )
+
+        max_track_count = datewise_track_count_ser.max()
+        max_track_count_date = datewise_track_count_ser.idxmax()
+        Printer.plain(
+            f"You listened the most tracks on {chalk.yellow(max_track_count_date)} with a total of {chalk.yellow(max_track_count)} tracks played!"
+        )
 
     __x = pd.to_datetime(datewise_track_count_ser.index)
     __y = datewise_track_count_ser.values

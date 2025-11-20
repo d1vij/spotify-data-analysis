@@ -2,9 +2,9 @@ from IPython.core.magic import Magics, magics_class, line_magic
 from pathlib import Path
 from IPython import get_ipython
 
+
 @magics_class
 class LoadNextMagics(Magics):
-
     @line_magic
     def loadnext(self, path):
         path = path.strip()
@@ -15,6 +15,7 @@ class LoadNextMagics(Magics):
         ip.set_next_input(text, replace=True)
 
         return
+
 
 ip = get_ipython()
 ip.register_magics(LoadNextMagics)

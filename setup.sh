@@ -18,4 +18,4 @@ fi
 
 .venv/bin/python3 -m pip install -r requirements.txt
 echo -e "\033[32mPython environment setup\033[0m"
-source .venv/bin/activate
+source ./.venv/bin/activate

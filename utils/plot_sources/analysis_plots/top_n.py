@@ -2,7 +2,6 @@ from os import path
 from typing import cast
 
 
-
 import chalk
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,13 +25,16 @@ def top_n_artists_by_playtime(df: pd.DataFrame, n: int):
     time_listend_mins = cast(pd.Series, Filters.rows_gt(1, time_listend_mins))
 
     Printer.cyan_underline(
-        f"Out of {len(time_listend_mins)} artists, the top {n} artists based on track playtimes are"
+        f"Out of {len(time_listend_mins)} artists, the top {n} artists based on track playtimes (in hours) are"
     )
 
-    data = list(f"{chalk.green(f"{idx + 1}.")} {artist_name} - {playtime_hours:,.1f}" for idx, (artist_name, playtime_hours) in enumerate(time_listend_mins[:n].items()))
-    max_len = max(len(l)  for idx,l in enumerate(data) if idx % 2 == 0)
-    for idx in range(0, n, 2):
-        print(data[idx].ljust(max_len), data[idx + 1])
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {artist_name} - {playtime_hours:,.1f}"
+        for idx, (artist_name, playtime_hours) in enumerate(
+            time_listend_mins[:n].div(60).items()
+        )
+    )
+    Printer.two_columns(data)
 
     # Plotting
     index_wrap(time_listend_mins, 10)
@@ -50,10 +52,11 @@ def top_n_tracks_by_playcount(df: pd.DataFrame, n: int):
         f"Out of {len(most_played_tracks)} unique tracks, the top {n} played tracks are"
     )
 
-    data = list(f"{chalk.green(f"{idx + 1}.")} {trackname} - {playcount:,.0f}" for idx, (trackname, playcount) in enumerate(most_played_tracks[:n].items()))
-    max_len = max(len(l)  for idx,l in enumerate(data) if idx % 2 == 0)
-    for idx in range(0, n, 2):
-        print(data[idx].ljust(max_len), data[idx + 1])
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {trackname} - {playcount:,.0f}"
+        for idx, (trackname, playcount) in enumerate(most_played_tracks[:n].items())
+    )
+    Printer.two_columns(data)
 
     index_wrap(most_played_tracks, 10)
     plot_squarify(most_played_tracks[:n], f"{n} Most played tracks")
@@ -81,14 +84,14 @@ def top_n_albums_by_playcount(df: pd.DataFrame, n: int):
     Printer.cyan_underline(
         f"Out of {len(most_played_albums)} unique albums, the top {n} played albums based on approximate playcounts are"
     )
-    data = list(f"{chalk.green(f"{idx + 1}.")} {album_name} - {playcount:,.0f}" for idx, (album_name, playcount) in enumerate(most_played_albums[:n].items()))
-    max_len = max(len(l)  for idx,l in enumerate(data) if idx % 2 == 0)
-    for idx in range(0, n, 2):
-        print(data[idx].ljust(max_len), data[idx + 1])
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {album_name} - {playcount:,.0f}"
+        for idx, (album_name, playcount) in enumerate(most_played_albums[:n].items())
+    )
+    Printer.two_columns(data)
 
     index_wrap(most_played_albums, 10)
     plot_squarify(most_played_albums[:n], f"{n} Most played albums")
-
 
 
 def top_n_genres_and_countries(df: pd.DataFrame, artists_df: pd.DataFrame):
@@ -101,8 +104,10 @@ def top_n_genres_and_countries(df: pd.DataFrame, artists_df: pd.DataFrame):
 
     # Vars
     countries_count = len(artists_countries_ser)
-    most_listened_country_name =  artists_countries_ser.index[0]
-    most_listened_country_artists_count =  artists_countries_ser[most_listened_country_name]
+    most_listened_country_name = artists_countries_ser.index[0]
+    most_listened_country_artists_count = artists_countries_ser[
+        most_listened_country_name
+    ]
 
     Printer.blue_underline("Where the artists you listened to come from")
 
@@ -115,18 +120,24 @@ def top_n_genres_and_countries(df: pd.DataFrame, artists_df: pd.DataFrame):
     n_countries = 10
     Printer.green_underline(f"\nTop {n_countries} countries by artist count are:")
 
-    data = list(f"{chalk.green(f"{idx + 1}.")} {country_name} - {artist_count}" for idx, (country_name, artist_count) in enumerate(artists_countries_ser[:n_countries].items()))
-    max_len = max(len(l)  for idx,l in enumerate(data) if idx % 2 == 0)
-    for idx in range(0, n_countries, 2):
-        print(data[idx].ljust(max_len), data[idx + 1])
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {country_name} - {artist_count}"
+        for idx, (country_name, artist_count) in enumerate(
+            artists_countries_ser[:n_countries].items()
+        )
+    )
+    Printer.two_columns(data)
 
-    
     fig, ax = plt.subplots(2, 1, figsize=(16, 16))
 
     index_wrap(artists_countries_ser, 10)
-    
-    plot_squarify(artists_countries_ser[artists_countries_ser > 1], "Countries' artist count", _ax=ax[0])
-    
+
+    plot_squarify(
+        artists_countries_ser[artists_countries_ser > 1],
+        "Countries' artist count",
+        _ax=ax[0],
+    )
+
     # Genres stuff
     unique_genres = {}
     for genre_list in unique_artists_df["artist_genre"]:
@@ -138,8 +149,8 @@ def top_n_genres_and_countries(df: pd.DataFrame, artists_df: pd.DataFrame):
     unique_genres_ser = pd.Series(unique_genres).sort_values(ascending=False)
 
     genre_count = len(unique_genres_ser)
-    most_listened_genre_name = unique_genres_ser.index[0]    
-    most_listened_genre_count = unique_genres_ser.iat[0]    
+    most_listened_genre_name = unique_genres_ser.index[0]
+    most_listened_genre_count = unique_genres_ser.iat[0]
     Printer.blue_underline("\nWhat genres do you listen to")
 
     print(
@@ -147,25 +158,36 @@ def top_n_genres_and_countries(df: pd.DataFrame, artists_df: pd.DataFrame):
         f"you listen to {chalk.yellow(most_listened_genre_name)} the most "
         f"with a total of {chalk.yellow(most_listened_genre_count)} artists under that genre!!"
     )
-    
+
     n_genres = 20
     Printer.green_underline(f"\nTop {n_genres} genres by artist count are:")
 
-
-    if(n_genres % 2 != 0):
+    if n_genres % 2 != 0:
         raise ValueError(f"Count of genres to include must be an even number!!")
 
-    data = list(f"{chalk.green(f"{idx + 1}.")} {genre} - {artist_count}" for idx, (genre, artist_count) in enumerate(unique_genres_ser[:n_genres].items()))
-    max_len = max(len(l)  for idx,l in enumerate(data) if idx % 2 == 0)
-    for idx in range(0, n_genres, 2):
-        print(data[idx].ljust(max_len), data[idx + 1])
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {genre} - {artist_count}"
+        for idx, (genre, artist_count) in enumerate(
+            unique_genres_ser[:n_genres].items()
+        )
+    )
+    Printer.two_columns(data)
 
     index_wrap(unique_genres_ser, 10)
-    plot_squarify(unique_genres_ser[unique_genres_ser > 1][:100], "Genres' artist count", _ax=ax[1]) # type: ignore
+    plot_squarify(
+        unique_genres_ser[unique_genres_ser > 1][:100],
+        "Genres' artist count",
+        _ax=ax[1],
+    )  # type: ignore
 
     plt.tight_layout()
     plt.show()
-def top_analysis(df: pd.DataFrame,artists_df: pd.DataFrame, ):
+
+
+def top_analysis(
+    df: pd.DataFrame,
+    artists_df: pd.DataFrame,
+):
     top_n_artists_by_playtime(df, 50)
     top_n_tracks_by_playcount(df, 50)
     top_n_albums_by_playcount(df, 50)

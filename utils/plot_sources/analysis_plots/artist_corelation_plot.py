@@ -59,7 +59,9 @@ def generate_probability_matrix(correlation_matrix):
         1
     )
 
+
 from utils.plot_sources.plotters.plot_heatmap import plot_heatmap
+
 
 def artist_correlation_plot(df: pd.DataFrame):
     mat = generate_correlation_matrix(

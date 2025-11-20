@@ -1,8 +1,9 @@
 import chalk
+from typing import Union
 
 
 class Printer:
-    """Utility class for printing styled terminal output using pychalk."""
+    """Utility class for printing styled terminal output"""
 
     @staticmethod
     def _join(*args):
@@ -75,3 +76,13 @@ class Printer:
     @staticmethod
     def magenta_underline(*args):
         print(chalk.underline(chalk.magenta(Printer._join(*args))))
+
+    @staticmethod
+    def plain(*args):
+        print(Printer._join(*args))
+
+    @staticmethod
+    def two_columns(data: list[str]):
+        max_len = max(len(d) for (idx, d) in enumerate(data) if (idx % 2 == 0))
+        for idx in range(0, len(data) - 1, 2):
+            Printer.plain(data[idx].ljust(max_len), data[idx + 1])

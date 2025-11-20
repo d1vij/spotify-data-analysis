@@ -2,11 +2,13 @@ import warnings
 from typing import cast
 from datetime import datetime
 
+import chalk
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatch
 
+from utils.printers import Printer
 from utils.series_textwrap import index_wrap, list_wrap
 from utils.series_textellipses import index_ellipses
 
@@ -21,7 +23,6 @@ from utils.plot_sources.analysis_plots.daily_listening_activity import (
     daily_listening_activity,
 )
 from utils.fuzzy_searchers import fuzzy_search
-
 
 def __bar_plot(heights, labels, target: str, title: str, *, _ax=None):
     blue = "#5EABD6"
@@ -60,7 +61,9 @@ def __relative_artist_analysis(
     ]
 
     if artist_name not in unique_artists_df["artist_name"].values:
-        warnings.warn(f"No country found for artist {artist_name}, proceeding with no country based analysis")
+        warnings.warn(
+            f"No country found for artist {artist_name}, proceeding with no country based analysis"
+        )
         return
     else:
         artist_country = unique_artists_df.loc[
@@ -85,7 +88,8 @@ def __relative_artist_analysis(
     )
 
     artist_rank = cast(
-        int, same_country_artists_playtime_ser.index.get_loc(artist_name) #type: ignore
+        int,
+        same_country_artists_playtime_ser.index.get_loc(artist_name),  # type: ignore
     )
     artist_rank += 1
     # How many artists to consider on either side
@@ -125,12 +129,67 @@ def __relative_artist_analysis(
     )
 
 
+def __artist_album_analysis(frame: pd.DataFrame, artist_name: str):
+    # Wont filter here based on artist name cuz my dataframe already is filtered
+    albums = frame.loc[
+        :,
+        "master_metadata_album_album_name",
+    ].unique()
+
+    Printer.plain()
+    Printer.blue_underline(f"Album analysis for {chalk.yellow(artist_name)}")
+
+    Printer.green_underline(f"All listened albums by {artist_name}")
+    data = list(
+        f"{chalk.green(f'{idx}.')} {album}"
+        for (idx, album) in enumerate(sorted(albums), 1)
+    )
+    Printer.two_columns(data)
+
+    # Approximate count of tracks in each album by the artist
+    # This would be inaccurate if the user hasnt listened to all tracks from the album
+    album_track_count = (
+        frame.loc[frame["master_metadata_album_album_name"].isin(albums)]
+        .groupby("master_metadata_album_album_name")
+        .nunique()
+        .loc[:, "master_metadata_track_name"]
+    )
+
+    # Times a track from a particular album was played
+    album_track_play_count = (
+        frame.loc[frame["master_metadata_album_album_name"].isin(albums)]
+        .groupby("master_metadata_album_album_name")
+        .size()
+    )
+
+    # Number of time an album has been played
+    # playcount = total times track from a album has been played / number of tracks from that album
+    album_playcount = (
+        album_track_play_count.div(album_track_count)
+        .fillna(1)
+        .sort_values(ascending=False)
+        .head(50)  # Only get top 50
+        .round(0)
+        .astype(int)
+    )
+
+    Printer.plain()
+    Printer.green_underline("Top albums by approximate playcount")
+    Printer.two_columns(
+        list(
+            f"{chalk.green(f'{idx}.')} {album} - {playcount}"
+            for (idx, (album, playcount)) in enumerate(album_playcount.items(), 1)
+        )
+    )
+
+
 def analysis_per_artist(
     frame: pd.DataFrame, artist: str, artists_info_frame: pd.DataFrame
 ):
     if artist not in frame["master_metadata_album_artist_name"].values:
         raise ValueError(f"Artist {artist} is not in data")
 
+    # Dataframe having data only for the provided artist
     artist_frame = frame[frame["master_metadata_album_artist_name"] == artist].copy(
         True
     )
@@ -144,7 +203,7 @@ def analysis_per_artist(
     fig = plt.figure(figsize=(18, 24), constrained_layout=False)
 
     grid = fig.add_gridspec(
-        5, 2, height_ratios=[2.5, 1, 1, 1,1.5], hspace=0.4, wspace=0.3
+        5, 2, height_ratios=[2.5, 1, 1, 1, 1.5], hspace=0.4, wspace=0.3
     )
 
     # 1x2
@@ -173,6 +232,14 @@ def analysis_per_artist(
         .sort_values(ascending=False)
     )
 
+    Printer.blue_underline(f"Twenty most played tracks by {chalk.yellow(artist)}")
+
+    data = list(
+        f"{chalk.green(f'{idx + 1}.')} {trackname} - {chalk.yellow(playcount)} plays"
+        for idx, (trackname, playcount) in enumerate(played_track_count[:25].items())
+    )
+    Printer.two_columns(data)
+
     index_wrap(played_track_count, 12)
     index_ellipses(played_track_count, 22)
 
@@ -191,11 +258,11 @@ def analysis_per_artist(
     )
 
     # fig, ax = plt.subplots(2, 2, figsize=(15,7.5))
-
     fig.suptitle("Track analysis for " + artist, fontsize=23)
 
-    daily_tracks_graph(artist_frame, ax4)
-    track_playtime_kde_dist(artist_frame, [ax5, ax3])  # type: ignore
+    daily_tracks_graph(artist_frame, ax4, print_analysis=True, artist_name=artist)
+    track_playtime_kde_dist(artist_frame, [ax5, ax3], True, artist_name=artist)
+    __artist_album_analysis(artist_frame, artist)
     daily_listening_activity(artist_frame, ax6)
     __relative_artist_analysis(artist, frame, artists_info_frame, ax7, ax8)
 

@@ -1,29 +1,57 @@
+import chalk
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 
-from typing import cast
+from typing import cast, Optional
 from datetime import datetime
 
 from utils.filters import Filters
+from utils.printers import Printer
 
 
-def track_playtime_kde_dist(df: pd.DataFrame, _ax: list[Axes] | None = None):
+def track_playtime_kde_dist(
+    df: pd.DataFrame,
+    _ax: list[Axes] | None = None,
+    print_analysis: bool = False,
+    *,
+    artist_name: Optional[str] = None,
+):
     fig = None
     track_playtime_ser = df["ms_played"].copy(True)
     track_playtime_ser = track_playtime_ser.apply(lambda ts: int(ts) / 6e4).round(3)
 
-    # Dataframe rows who's playtime is under a minute
+    # Dataframe rows where playtime is under a minute
     under_min = cast(pd.Series, Filters.rows_lteq(1, track_playtime_ser))
 
-    # Filtering rows whose playtime is over 1 minute
+    # Filtering rows where playtime is over 1 minute
     track_playtime_ser = cast(
         pd.Series, Filters.rows_gteq(1, track_playtime_ser)
     )  # only for intellisence
 
-    # Filtering rows whose playtime is under 10 minute
+    # Filtering rows where playtime is under 10 minutes
     track_playtime_ser = cast(pd.Series, Filters.rows_lteq(10, track_playtime_ser))
+
+    if print_analysis:
+        if artist_name == None:
+            raise RuntimeError("No artist name passed")
+
+        Printer.plain()
+        Printer.blue_underline(
+            f"Track playtimes distribution for {chalk.underline(chalk.yellow(artist_name))}"
+        )
+
+        Printer.plain(
+            f"Out of {len(track_playtime_ser) + len(under_min)} played tracks, {chalk.yellow(len(under_min))} tracks are under minute and {chalk.yellow(len(track_playtime_ser))} are over a minute but under 10 minutes"
+        )
+
+        Printer.plain(
+            f"Average length of track is {chalk.yellow(round(track_playtime_ser.mean(), 2))} minutes"
+        )
+        Printer.plain(
+            f"Your longest track played was {chalk.yellow(round(df['ms_played'].max() / 6e4, 2))} minutes"
+        )
 
     if _ax is None:
         fig, ax = plt.subplots(2, 1, figsize=(10, 7))
@@ -51,7 +79,7 @@ def track_playtime_kde_dist(df: pd.DataFrame, _ax: list[Axes] | None = None):
 
     ax[0].set_title("KDE distribution of track playtimes (over minute)")
     ax[0].axvline(
-        track_playtime_ser.mean(),
+        track_playtime_ser.mean(),  # type: ignore
         0,
         label="Mean",
         linestyle=":",
