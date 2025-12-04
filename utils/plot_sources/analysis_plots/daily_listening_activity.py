@@ -1,3 +1,4 @@
+from typing import cast
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -20,10 +21,7 @@ def daily_listening_activity(df: pd.DataFrame, _ax=None):
     # since values in df.ts are already datetime objects
 
     # Total minutes played in a particular hour
-    # SQL Logic would be -> select hour, sum(ms_played) / 60000
-    #   from df
-    #   group by hour
-    hour_wise_count = hour_df.groupby("hour")["ms_played"].sum() / 60000
+    hour_wise_count = pd.Series(hour_df.groupby("hour")["ms_played"].sum().div(60000))
 
     # Ensure all 24 hours are present, fills the missing one with 0s
     hour_wise_count = hour_wise_count.reindex(range(24), fill_value=0)
@@ -48,6 +46,7 @@ def daily_listening_activity(df: pd.DataFrame, _ax=None):
         ax = _ax
 
     for idx, daytime_ser in enumerate(daytimes):
+        daytime_ser = cast(pd.Series, daytime_ser)
         ax.fill_between(
             daytime_ser.index,
             0,
@@ -63,7 +62,7 @@ def daily_listening_activity(df: pd.DataFrame, _ax=None):
             color=daytime_colors[idx],
         )
         ax.vlines(
-            daytime_ser.index.max(),
+            daytime_ser.index.max(),  # type: ignore
             0,
             daytime_ser.iat[-1],
             linestyle="solid",

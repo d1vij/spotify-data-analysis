@@ -1,11 +1,10 @@
+from typing import Optional, cast
+
 import chalk
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
-
-from typing import cast, Optional
-from datetime import datetime
 
 from utils.filters import Filters
 from utils.printers import Printer
@@ -93,7 +92,7 @@ def track_playtime_kde_dist(
 
     ax[1].set_title("KDE distribution of track playtimes (under minute)")
     ax[1].set_xlabel("Minutes")
-    ax[1].axvline(under_min.mean(), 0, label="Mean", linestyle=":", color="000", alpha=0.5)
+    ax[1].axvline(under_min.mean(), 0, label="Mean", linestyle=":", color="000", alpha=0.5)  # type: ignore
     ax[1].legend()
 
     sns.despine()

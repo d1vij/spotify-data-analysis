@@ -13,6 +13,6 @@ def smoothen(ser: pd.Series, amount: int):
         warnings.warn("Reconsider the amount since it might cause large runtimes")  # lmao
 
     spline = make_interp_spline(ser.index, ser.values)
-    x_points = np.linspace(ser.index.min(), ser.index.max(), amount, endpoint=True)
+    x_points = np.linspace(ser.index.min(), ser.index.max(), amount, endpoint=True)  # type: ignore
     y_points = spline(x_points)
     return pd.Series(y_points, index=x_points)

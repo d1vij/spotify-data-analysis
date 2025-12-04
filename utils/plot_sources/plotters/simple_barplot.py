@@ -1,6 +1,5 @@
 import pandas as pd
 import seaborn as sns
-from squarify import squarify
 import matplotlib.pyplot as plt
 
 

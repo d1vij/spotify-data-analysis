@@ -1,13 +1,13 @@
+from datetime import datetime
+from typing import Optional, cast
+
+import chalk
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-from datetime import datetime
 
 from utils.filters import Filters
-
 from utils.printers import Printer
-import chalk
-from typing import Optional
 
 
 # Plots a scatterplot for total tracks played daily
@@ -26,7 +26,7 @@ def daily_tracks_graph(
     daywise_plays_df = df[["ts", "ms_played"]].copy(True)
 
     # filtering out skipped tracks
-    daywise_plays_df = daywise_plays_df[daywise_plays_df["ms_played"] >= 1e4]
+    daywise_plays_df = cast(pd.DataFrame, daywise_plays_df[daywise_plays_df["ms_played"] >= 1e4])
     daywise_plays_df.sort_values("ts", inplace=True)
     dates = daywise_plays_df["ts"].apply(lambda ts: datetime.strftime(ts, "%Y-%m-%d"))
     datewise_track_count_ser = dates.groupby(dates).count()
@@ -40,7 +40,7 @@ def daily_tracks_graph(
         )  # accounting the edge case when user no listening history
 
     if print_analysis:
-        if artist_name == None:
+        if artist_name is None:
             raise RuntimeError("No artist name passed")
 
         Printer.plain()
@@ -55,13 +55,13 @@ def daily_tracks_graph(
         )
 
         max_track_count = datewise_track_count_ser.max()
-        max_track_count_date = datewise_track_count_ser.idxmax()
+        max_track_count_date = datewise_track_count_ser.idxmax()  # type: ignore
         Printer.plain(
             f"You listened the most tracks on {chalk.yellow(max_track_count_date)} with a total of {chalk.yellow(max_track_count)} tracks played!"
         )
 
-    __x = pd.to_datetime(datewise_track_count_ser.index)
-    __y = datewise_track_count_ser.values
+    __x = pd.to_datetime(datewise_track_count_ser.index)  # type: ignore
+    __y = datewise_track_count_ser.values  # type: ignore
 
     if _ax is None:
         fig, ax = plt.subplots(figsize=(10, 4))
@@ -71,7 +71,7 @@ def daily_tracks_graph(
     sns.scatterplot(
         x=__x,
         y=__y,
-        hue=datewise_track_count_ser.values,
+        hue=datewise_track_count_ser.values,  # type: ignore
         ax=ax,
         palette="coolwarm",
         marker="o",

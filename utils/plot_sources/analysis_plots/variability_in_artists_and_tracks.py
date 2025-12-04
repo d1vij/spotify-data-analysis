@@ -1,3 +1,4 @@
+from typing import cast
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -10,7 +11,7 @@ def variability_in_artists_and_tracks(df: pd.DataFrame, _ax=None):
     # Number of Unique artists vs Unique tracks listend each month
     # Plots monthly data for each month from first listened track to latest track
 
-    copy = df[["ts", "master_metadata_album_artist_name", "master_metadata_track_name"]].copy(True)
+    copy = cast(pd.DataFrame, df[["ts", "master_metadata_album_artist_name", "master_metadata_track_name"]].copy(True))
 
     # Converts the timestamp into monthly periods
     # For example, "2021-08-11 09:22:28+00:00" would get converted into "2021-08"
@@ -38,8 +39,8 @@ def variability_in_artists_and_tracks(df: pd.DataFrame, _ax=None):
         axis=1,
     )
 
-    y1 = aggr["Artist Count"]
-    y2 = aggr["Track Count"]
+    y1 = cast(pd.Series, aggr["Artist Count"])
+    y2 = cast(pd.Series, aggr["Track Count"])
 
     if _ax is None:
         fig, ax = plt.subplots(1, 1, figsize=(10, 4))
