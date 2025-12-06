@@ -83,7 +83,7 @@ def __relative_artist_analysis(
     same_country_artists_playtime_ser = (
         frame.loc[
             frame["master_metadata_album_artist_name"].isin(
-                same_country_artists_names  # type: ignore
+                same_country_artists_names
             ),
             ["master_metadata_album_artist_name", "ms_played"],
         ]
@@ -96,7 +96,7 @@ def __relative_artist_analysis(
     # Rank is just the index number of my artist in the playtime series
     artist_rank = cast(
         int,
-        same_country_artists_playtime_ser.index.get_loc(artist_name),  # type: ignore
+        same_country_artists_playtime_ser.index.get_loc(artist_name),
     )
 
     # Since the indexes start at 0
@@ -205,7 +205,7 @@ def analysis_per_artist(frame: pd.DataFrame, artist: str, artists_info_frame: pd
         raise ValueError(f"Artist {artist} is not in data")
 
     # Dataframe having data only for the provided artist
-    artist_frame = frame[frame["master_metadata_album_artist_name"] == artist].copy(True)
+    artist_frame = cast(pd.DataFrame, frame[frame["master_metadata_album_artist_name"] == artist].copy(True))
     # grouped = artist_frame.groupby("master_metadata_album_artist_name")
     # changing ts to year
     artist_frame["year"] = artist_frame.loc[:, "ts"].apply(lambda ts: datetime.strftime(ts, "%Y"))
@@ -236,9 +236,8 @@ def analysis_per_artist(frame: pd.DataFrame, artist: str, artists_info_frame: pd
 
     # Top 50 played tracks
     played_track_count = (
-        artist_frame.groupby("master_metadata_track_name").size().sort_values(ascending=False)  # type: ignore
+        artist_frame.groupby("master_metadata_track_name").size().sort_values(ascending=False)
     )
-
     Printer.blue_underline(f"Twenty most played tracks by {chalk.yellow(artist)}")
 
     data = list(
@@ -246,14 +245,13 @@ def analysis_per_artist(frame: pd.DataFrame, artist: str, artists_info_frame: pd
         for idx, (trackname, playcount) in enumerate(played_track_count.head(25).items())
     )
     Printer.two_columns(data)
-
     index_wrap(played_track_count, 12)
     index_ellipses(played_track_count, 22)
 
     plot_squarify(played_track_count.head(25), f"Twenty Five most played tracks by {artist}", ax1)
 
     # Year wise play time
-    yearwise_playtime = cast(pd.Series, artist_frame.groupby("year").size())
+    yearwise_playtime = artist_frame.groupby("year").size()
     simple_barplot(
         yearwise_playtime,
         f"Tracks played in a particular year by {artist}",
@@ -265,7 +263,7 @@ def analysis_per_artist(frame: pd.DataFrame, artist: str, artists_info_frame: pd
     # fig, ax = plt.subplots(2, 2, figsize=(15,7.5))
     fig.suptitle("Track analysis for " + artist, fontsize=23)
 
-    artist_frame = cast(pd.DataFrame, artist_frame)
+    # artist_frame = cast(pd.DataFrame, artist_frame)
     daily_tracks_graph(artist_frame, ax4, print_analysis=True, artist_name=artist)
     track_playtime_kde_dist(artist_frame, [ax5, ax3], True, artist_name=artist)
     __artist_album_analysis(artist_frame, artist)
@@ -277,7 +275,8 @@ def analysis_per_artist(frame: pd.DataFrame, artist: str, artists_info_frame: pd
     plt.show()
 
 
-PROMPT = """What do you want to do ??
+PROMPT = """
+What do you want to do ??
 (1) Display top artist analysis for top artists
 (2) Display analysis for custom artist
 (*) Exit
@@ -297,7 +296,7 @@ def __top_n_artist_analysis(frame: pd.DataFrame, artists_info_frame: pd.DataFram
     Printer.red_bold(f"Generate analysis for how many top artists ??: {n}")
 
     top_artists = (
-        frame.groupby("master_metadata_album_artist_name")["ms_played"].sum().sort_values(ascending=False)  # type: ignore
+        frame.groupby("master_metadata_album_artist_name")["ms_played"].sum().sort_values(ascending=False) #type: ignore
     )
 
     for artist_name, _ in top_artists.head(n).items():

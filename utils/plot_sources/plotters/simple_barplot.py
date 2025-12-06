@@ -20,5 +20,5 @@ def simple_barplot(y: pd.Series, title: str, xlabel, ylabel, _ax=None):
     ax.grid(linestyle=":", axis="y")
 
     sns.despine(top=True, right=True)
-    if ax is None:
+    if _ax is None:
         plt.show()

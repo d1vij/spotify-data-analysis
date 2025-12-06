@@ -36,7 +36,7 @@ def process_zip(filepath: str, filters: list[SongAttributes], *, _as: Literal["j
     )
 
     # print(f"{zip_extract_path=}")
-    out_path = os.path.join(os.path.dirname(filepath), filename + ".json")
+    out_path = os.path.join(os.path.dirname(filepath), filename + "." + _as)
 
     with zipfile.ZipFile(filepath) as __zipfile:
         __zipfile.extractall(path=zip_extract_path)

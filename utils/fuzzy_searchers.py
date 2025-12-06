@@ -41,7 +41,6 @@ def fuzzy_search(
 
     matched = []
     ratios = []
-    print(data)
     for value in data:
         if value is not None:
             value = str(value)
@@ -54,7 +53,7 @@ def fuzzy_search(
                 matched.append(value)
                 ratios.append(ratio)
 
-    artists = [
+    results = [
         value
         for value, _ in sorted(
             [(value, ratio) for value, ratio in zip(matched, ratios)],
@@ -63,6 +62,6 @@ def fuzzy_search(
         )
     ]
     if top_n < 0:
-        return artists
+        return results
     else:
-        return artists[:top_n]
+        return results[:top_n]
