@@ -9,7 +9,7 @@ if __name__ == "__main__":
             "html",
             "--no-prompt",
             "project.ipynb",
-            '--output-dir="./build"',
+            "--output", "index.html"
         ],
         cwd=".",
     )
